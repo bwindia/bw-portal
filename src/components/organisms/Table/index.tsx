@@ -158,7 +158,7 @@ const Table = ({
       </TableHeader>
       <TableBody items={sortedItems} emptyContent={"No users to display."}>
         {(item) => (
-          <TableRow key={item?.id}>
+          <TableRow key={item?.user_id}>
             {(columnKey) => (
               <TableCell>
                 {props.renderCell

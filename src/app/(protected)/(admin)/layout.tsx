@@ -5,13 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { User } from "@supabase/supabase-js";
 import { IUser } from "@/utils/types";
 import { redirect } from "next/navigation";
-import { SIGN_IN_PATH } from "@/utils/urls";
+import { SIGN_IN_PATH } from "@/utils/routes";
 
-export default async function RootLayout({
+const AdminLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   const supabase = createClient();
   const {
     data: { user },
@@ -19,8 +19,8 @@ export default async function RootLayout({
   const getUserDetails = (user: User | null): IUser => {
     if (user) {
       const profile: IUser = {
-        name: user.email,
-        email: user.email,
+        name: user.email ?? "",
+        email: user.email ?? "",
       };
       return profile;
     } else {
@@ -33,13 +33,12 @@ export default async function RootLayout({
     <>
       <main className="h-svh overflow-hidden flex">
         <div>
-          <SideNav
-            items={ADMIN_NAV_BAR}
-            user={profile}
-          />
+          <SideNav items={ADMIN_NAV_BAR} user={profile} />
         </div>
-        <div className="overflow-auto">{children}</div>
+        <div className="overflow-auto p-6 w-full">{children}</div>
       </main>
     </>
   );
-}
+};
+
+export default AdminLayout;

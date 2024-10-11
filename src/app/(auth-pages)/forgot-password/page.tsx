@@ -1,4 +1,4 @@
-import { forgotPasswordAction } from "@/app/actions";
+import { forgotPasswordAction } from "@/app/(auth-pages)/actions";
 import Input from "@/components/atoms/Input";
 import FormMessage from "@/components/molecules/FormMessage";
 import FormSubmitButton from "@/components/molecules/FormSubmitButton";

@@ -15,11 +15,10 @@ const Breadcrumb = ({ path }: Props) => {
   const breadcrumbItems = path || getPathBasedOnLocation();
   
   return (
-    <Breadcrumbs className="mb-3">
+    <Breadcrumbs className="mb-6">
       {breadcrumbItems.map((item) => (
-        <BreadcrumbItem key={`breadcrumb-${item}`}>{item}</BreadcrumbItem>
+        <BreadcrumbItem key={`breadcrumb-${item}`} className="capitalize">{item}</BreadcrumbItem>
       ))}
-      <BreadcrumbItem>Home</BreadcrumbItem>
     </Breadcrumbs>
   );
 };

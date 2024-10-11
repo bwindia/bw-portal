@@ -1,4 +1,5 @@
-import { signUpAction } from "@/app/actions";
+import React from "react";
+import { signUpAction } from "@/app/(auth-pages)/actions";
 import Link from "next/link";
 import FormMessage from "@/components/molecules/FormMessage";
 import Input from "@/components/atoms/Input";
@@ -16,7 +17,7 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
 
   return (
     <>
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
+      <form className="flex flex-col min-w-64 mx-auto">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
           Already have an account?
@@ -27,19 +28,27 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
           <label htmlFor="email">Email</label>
           <Input
-          size="lg"
+            size="lg"
             name="email"
             placeholder="you@example.com"
-            color={"error" in searchParams && searchParams.error ? "danger" : "default"}
+            color={
+              "error" in searchParams && searchParams.error
+                ? "danger"
+                : "default"
+            }
             required
           />
           <label htmlFor="password">Password</label>
           <Input
-          size="lg"
+            size="lg"
             type="password"
             name="password"
             placeholder="Your password"
-            color={"error" in searchParams && searchParams.error ? "danger" : "default"}
+            color={
+              "error" in searchParams && searchParams.error
+                ? "danger"
+                : "default"
+            }
             minLength={6}
             required
           />

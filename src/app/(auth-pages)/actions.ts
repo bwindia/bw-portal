@@ -4,7 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { ADMIN_PAGE_ROUTE, SIGN_IN_PATH, SIGN_UP_PATH } from "@/utils/urls";
+import { ADMIN_PAGE_ROUTE, SIGN_IN_PATH, SIGN_UP_PATH } from "@/utils/routes";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();

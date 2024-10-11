@@ -1,23 +1,30 @@
+import { BRIDGES_PAGE_ROUTE, USERS_PAGE_ROUTE } from "./routes";
 import { INavItem, ITableColumn, IUser } from "./types";
 
 export const BLOOD_WARRIORS = "Blood Warriors";
 
-export const TABLE_COLUMNS: ITableColumn[] = [
+export const USERS_TABLE_COLUMNS: ITableColumn[] = [
   {
-    key: "firstName",
-    label: "First Name",
-    isSortable: true,
-    isSearchable: true,
-  },
-  {
-    key: "lastName",
-    label: "Last Name",
+    key: "name",
+    label: "Name",
     isSortable: true,
     isSearchable: true,
   },
   {
     key: "email",
     label: "Email",
+  },
+  {
+    key: "mobile",
+    label: "Phone",
+  },
+  {
+    key: "gender",
+    label: "Gender",
+  },
+  {
+    key: "blood_group",
+    label: "Blood Group",
   },
   {
     key: "actions",
@@ -35,20 +42,21 @@ export const ADMIN_NAV_BAR: INavItem[] = [
   {
     icon: "group",
     label: "Users",
-    path: "",
+    path: USERS_PAGE_ROUTE,
   },
   {
-    label: "Manage Bridge",
-    path: "",
+    icon: "bloodtype",
+    label: "Bridges",
+    path: BRIDGES_PAGE_ROUTE,
   },
   {
-    icon: "package_2",
-    label: "Products",
+    icon: "volunteer_activism",
+    label: "Volunteers",
     path: "/products",
   },
   {
-    icon: "shopping_cart",
-    label: "Orders",
+    icon: "diversity_3",
+    label: "Donors",
     path: "/orders",
   },
 ];

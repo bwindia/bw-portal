@@ -1,9 +1,11 @@
-import { signOutAction } from "@/app/actions";
+import React from "react";
+import { signOutAction } from "@/app/(auth-pages)/actions";
 import Button from "@/components/atoms/Button";
 import { INavItem, IUser } from "@/utils/types";
 import { Avatar, Tooltip } from "@nextui-org/react";
+import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import bloodWarriorsLogo from "@/assets/logos/BW Long Logo.png";
 
 interface Props {
   items: INavItem[];
@@ -14,7 +16,9 @@ const SideNav = ({ items, user }: Props) => {
   return (
     <div className="flex flex-col justify-between max-w-72 min-w-64 bg-card_hover h-svh">
       <div className="flex flex-col gap-6 px-3">
-        <p className="font-bold text-inherit py-3">Blood Warriors</p>
+        <p className="font-bold text-inherit py-3 pointer">
+          <Image src={bloodWarriorsLogo} className="h-12 w-auto" alt="Blood Warriors Logo" />
+        </p>
         <div className="flex flex-col gap-1">
           {items.map((item) => (
             <>
@@ -39,8 +43,9 @@ const SideNav = ({ items, user }: Props) => {
             showFallback
             isBordered
             radius="full"
-            color="primary"
+            color="danger"
             size="md"
+            className="uppercase"
             name={user.email}
             src={user.image}
           />
@@ -48,12 +53,18 @@ const SideNav = ({ items, user }: Props) => {
           <span>{user.name}</span>
         </div>
         <form>
-        <Tooltip content="Logout" showArrow offset={0}>
-          <Button type="submit" isIconOnly variant="faded" className="border-0 text-black" formAction={signOutAction}>
-            <span className="material-symbols-rounded cursor-pointer">
-              logout
-            </span>
-          </Button>
+          <Tooltip content="Logout" showArrow offset={0}>
+            <Button
+              type="submit"
+              isIconOnly
+              variant="faded"
+              className="border-0 text-black"
+              formAction={signOutAction}
+            >
+              <span className="material-symbols-rounded cursor-pointer">
+                logout
+              </span>
+            </Button>
           </Tooltip>
         </form>
       </div>

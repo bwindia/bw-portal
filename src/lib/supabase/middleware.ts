@@ -6,7 +6,7 @@ import {
   SIGN_IN_PATH,
   SIGN_UP_PATH,
   VOLUNTEER_PAGE_ROUTE,
-} from "@/utils/urls";
+} from "@/utils/routes";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
