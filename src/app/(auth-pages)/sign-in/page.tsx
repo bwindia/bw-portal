@@ -3,8 +3,6 @@ import Input from "@/components/atoms/Input";
 import FormMessage from "@/components/molecules/FormMessage";
 import FormSubmitButton from "@/components/molecules/FormSubmitButton";
 import { Message } from "@/utils/types";
-import { SIGN_UP_PATH } from "@/utils/routes";
-import Link from "next/link";
 
 const SignIn = ({ searchParams }: { searchParams: Message }) => {
   return (
@@ -14,52 +12,31 @@ const SignIn = ({ searchParams }: { searchParams: Message }) => {
           <h2 className="text-2xl font-semibold text-center">
             Sign In to your Account
           </h2>
+          <p className="my-6 text-content4-foreground text-center">
+            Enter your registerd mobile number
+          </p>
           <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="phone">Phone</label>
             <Input
               size="lg"
-              type="email"
-              name="email"
-              placeholder="example@bloodwarriors.in"
+              type="text"
+              name="phone"
+              startContent={
+                <div className="pointer-events-none flex items-center">
+                  <span className="text-default-400 text-small">+91</span>
+                </div>
+              }
               required
             />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <Input
-              size="lg"
-              type="password"
-              name="password"
-              placeholder="Password"
-              required
-            />
-            <Link
-              className="text-primary underline text-sm float-right mt-2"
-              href="/forgot-password"
-            >
-              Forgot Password?
-            </Link>
           </div>
           <FormSubmitButton
-            pendingText="Signing In..."
+            className="mt-6"
+            pendingText="Sending OTP..."
             formAction={signInAction}
           >
-            Sign in
+            Send OTP
           </FormSubmitButton>
           <FormMessage message={searchParams} />
-        </div>
-        <div className="">
-          <div className="text-center mt-6">
-            <p className="text-sm">
-              Don&apos;t have an account?&nbsp;
-              <Link
-                className="text-primary font-medium underline"
-                href={SIGN_UP_PATH}
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </form>

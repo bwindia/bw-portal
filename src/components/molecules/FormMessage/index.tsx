@@ -13,9 +13,9 @@ const FormMessage = ({ message }: { message: Message }) => {
           {message.error}
         </div>
       )}
-      {"message" in message && (
+      {/* {"message" in message && (
         <div className="text-foreground border-l-2 px-4">{message.message}</div>
-      )}
+      )} */}
     </div>
   );
 }
