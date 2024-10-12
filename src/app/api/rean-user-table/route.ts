@@ -44,7 +44,7 @@ export const GET = async (request: Request) => {
   }
 
   const supabase = createClient();
-  let query = supabase.from("view_user_data_rean").select("*").limit(1);
+  let query = supabase.from("view_user_data_rean").select("*");
   if (phone_number && blood_bridge_id) {
     query = query.or(
       `phone_number.eq.${phone_number},bridge_id.eq.${blood_bridge_id}`
@@ -55,8 +55,7 @@ export const GET = async (request: Request) => {
     query = query.eq("bridge_id", blood_bridge_id);
   }
 
-  const { data, error } = await query.single();
-  console.log("data", data)
+  const { data, error } = await query;
 
   if (error || !data) {
     return NextResponse.json(
