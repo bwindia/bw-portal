@@ -8,9 +8,21 @@ import { redirect } from "next/navigation";
  * @returns {never} This function doesn't return as it triggers a redirect.
  */
 export function encodedRedirect(
-  type: "error" | "success",
+  type: "error" | "success" | "message",
   path: string,
   message: string,
+  searchParamsUrl?: string | null
 ) {
-  return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
+  let url = `${path}?${type}=${encodeURIComponent(message)}`;
+
+  // If searchParams is provided, add them to the URL
+  if (searchParamsUrl) {
+    const searchParams = new URL(searchParamsUrl).searchParams;
+    if (searchParams) {
+      searchParams.forEach((value, key) => {
+        if (key === "message") url += `&${key}=${encodeURIComponent(value)}`;
+      });
+    }
+  }
+  return redirect(url)
 }

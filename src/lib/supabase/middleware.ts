@@ -5,6 +5,7 @@ import {
   FORGOT_PASSWORD_PATH,
   SIGN_IN_PATH,
   SIGN_UP_PATH,
+  VERIFY_OTP_PATH,
   VOLUNTEER_PAGE_ROUTE,
 } from "@/utils/routes";
 import { createServerClient } from "@supabase/ssr";
@@ -16,7 +17,13 @@ const protectedRoutes = [
   VOLUNTEER_PAGE_ROUTE,
   DONOR_PAGE_ROUTE,
 ];
-const authRoutes = [SIGN_IN_PATH, SIGN_UP_PATH, FORGOT_PASSWORD_PATH, "/"];
+const authRoutes = [
+  SIGN_IN_PATH,
+  SIGN_UP_PATH,
+  FORGOT_PASSWORD_PATH,
+  VERIFY_OTP_PATH,
+  "/",
+];
 
 export const createClient = async (request: NextRequest) => {
   try {
@@ -50,21 +57,20 @@ export const createClient = async (request: NextRequest) => {
     );
 
     const user = await supabase.auth.getUser();
-    console.log("mid user", user);
     const path = request.nextUrl.pathname;
+    
     const isProtectedRoute = protectedRoutes.some((route) =>
-      path.startsWith(route)
-    );
-    const isAuthRoute = authRoutes.includes(path);
+      path.startsWith(route+"/")
+  );
+  if (isProtectedRoute && user.error) {
+    return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
+  }
+  const isAuthRoute = authRoutes.includes(path);
+  if (isAuthRoute && !user.error) {
+    // Write logic to redirect based on role here
+    return NextResponse.redirect(new URL(ADMIN_PAGE_ROUTE, request.url));
+  }
 
-    if (isProtectedRoute && user.error) {
-      return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
-    }
-
-    if (isAuthRoute && !user.error) {
-      // Write logic to redirect based on role here
-      return NextResponse.redirect(new URL(ADMIN_PAGE_ROUTE, request.url));
-    }
     return supabaseResponse;
   } catch (e) {
     // If you are here, a Supabase client could not be created!

@@ -4,7 +4,12 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { ADMIN_PAGE_ROUTE, SIGN_IN_PATH, SIGN_UP_PATH } from "@/utils/routes";
+import {
+  ADMIN_PAGE_ROUTE,
+  SIGN_IN_PATH,
+  SIGN_UP_PATH,
+  VERIFY_OTP_PATH,
+} from "@/utils/routes";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -37,17 +42,39 @@ export const signUpAction = async (formData: FormData) => {
 };
 
 export const signInAction = async (formData: FormData) => {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const phoneFormdata = formData.get("phone") as string;
+  const phone = "+91" + phoneFormdata;
   const supabase = createClient();
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const { error } = await supabase.auth.signInWithOtp({
+    phone,
   });
 
   if (error) {
     return encodedRedirect("error", SIGN_IN_PATH, error.message);
+  }
+
+  return encodedRedirect("message", VERIFY_OTP_PATH, phone);
+};
+
+export const verifyOtpAction = async (formData: FormData) => {
+  const token = formData.get("token") as string;
+  const phone = formData.get("phone") as string;
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms",
+  });
+
+  if (error) {
+    const searchParamsUrl = headers().get("Referer");
+    return encodedRedirect(
+      "error",
+      VERIFY_OTP_PATH,
+      error.message,
+      searchParamsUrl
+    );
   }
 
   return redirect(ADMIN_PAGE_ROUTE);
@@ -125,7 +152,7 @@ export const resetPasswordAction = async (formData: FormData) => {
 };
 
 export const signOutAction = async () => {
-  console.log("sign out")
+  console.log("sign out");
   const supabase = createClient();
   await supabase.auth.signOut();
   return redirect(SIGN_IN_PATH);
