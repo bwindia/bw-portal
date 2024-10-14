@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 import { NextResponse } from "next/server";
 import { authenticateUser } from "../auth";
 
-export const POST = async (request: Request) => {
+export const GET = async (request: Request) => {
   const authResponse = await authenticateUser(request);
   if (authResponse) return authResponse;
 
