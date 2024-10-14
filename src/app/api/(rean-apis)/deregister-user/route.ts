@@ -28,7 +28,7 @@ export const POST = async (request: Request) => {
 
   // Step 4: Update user status in the chatbot user table
   const { error } = await supabase
-    .from("chatbot_users")
+    .from("tracker_deregister_user")
     .update({ status: "deregistered", deregistration_reason: reason })
     .eq("mobile", mobile);
 
