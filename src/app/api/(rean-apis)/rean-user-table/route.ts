@@ -36,7 +36,7 @@ export const GET = async (request: Request) => {
 
   const { data, error } = await query;
 
-  if (error || !data) {
+  if (error || !data || !data.length) {
     return NextResponse.json(
       {
         status: "error",
