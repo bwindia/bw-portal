@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { authenticateUser } from "../auth";
 import { createClient } from "@/lib/supabase/client";
+import { NextErrorResponse, NextSuccessResponse } from "@/utils/api/response";
+import { authenticateUser } from "@/lib/rean-api/auth";
 
 export const POST = async (request: Request) => {
   const authResponse = await authenticateUser(request);
@@ -11,14 +11,7 @@ export const POST = async (request: Request) => {
 
   // Validate the required fields
   if (!mobile || !session_start_time || !session_end_time) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message: "Bad Request. Missing required fields.",
-      },
-      { status: 400 }
-    );
+    return NextErrorResponse("Bad Request. Missing required fields.", 400);
   }
 
   // Insert the session data into the tracker_chatbot_session table in Supabase
@@ -33,19 +26,12 @@ export const POST = async (request: Request) => {
 
   // Handle any errors during insertion
   if (error) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 500,
-        message: "Internal Server Error. Unable to log chatbot session data.",
-      },
-      { status: 500 }
+    return NextErrorResponse(
+      "Internal Server Error. Unable to log chatbot session data.",
+      500
     );
   }
 
   // Success response
-  return NextResponse.json({
-    status: "success",
-    message: "Chatbot session data logged successfully.",
-  });
+  return NextSuccessResponse("Chatbot session data logged successfully.");
 };

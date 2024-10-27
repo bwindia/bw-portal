@@ -1,6 +1,9 @@
+import { authenticateUser } from "@/lib/rean-api/auth";
 import { createClient } from "@/lib/supabase/client";
-import { NextResponse } from "next/server";
-import { authenticateUser } from "../auth";
+import {
+  NextErrorResponse,
+  NextSuccessDataResponse,
+} from "@/utils/api/response";
 
 export const GET = async (request: Request) => {
   const authResponse = await authenticateUser(request);
@@ -10,15 +13,11 @@ export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
   const phone_number = searchParams.get("phone_number");
   const blood_bridge_id = searchParams.get("blood_bridge_id");
-  if (!phone_number && !blood_bridge_id) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message:
-          "Bad Request. Either phone_number or blood_bridge_id is required.",
-      },
-      { status: 400 }
+  const user_id = searchParams.get("user_id");
+  if (!phone_number && !blood_bridge_id && !user_id) {
+    return NextErrorResponse(
+      "Bad Request. Either phone_number or blood_bridge_id or user_id is required.",
+      400
     );
   }
 
@@ -32,25 +31,16 @@ export const GET = async (request: Request) => {
     query = query.eq("phone_number", phone_number);
   } else if (blood_bridge_id) {
     query = query.eq("bridge_id", blood_bridge_id);
+  } else if (user_id) {
+    query = query.eq("user_id", user_id);
   }
 
   const { data, error } = await query;
 
   if (error || !data || !data.length) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 404,
-        message: "user not found",
-      },
-      { status: 404 }
-    );
+    return NextErrorResponse("user not found", 404);
   }
 
   // Format and return success response
-  return NextResponse.json({
-    status: "Success",
-    status_code: 200,
-    data,
-  });
+  return NextSuccessDataResponse(data);
 };
