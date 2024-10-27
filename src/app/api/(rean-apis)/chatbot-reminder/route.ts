@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { authenticateUser } from "../auth";
 import { createClient } from "@/lib/supabase/client";
+import { authenticateUser } from "@/lib/rean-api/auth";
+import { NextErrorResponse, NextSuccessResponse } from "@/utils/api/response";
 
 export const POST = async (request: Request) => {
   const authResponse = await authenticateUser(request);
@@ -11,14 +11,7 @@ export const POST = async (request: Request) => {
 
   // Validate the required fields
   if (!mobile || !time_stamp || !reminder_type) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message: "Bad Request. Missing required fields.",
-      },
-      { status: 400 }
-    );
+    return NextErrorResponse("Bad Request. Missing required fields.", 400);
   }
 
   // Insert the reminder data into the tracker_chatbot_reminder table in Supabase
@@ -33,13 +26,9 @@ export const POST = async (request: Request) => {
 
   // Check if reminder_type exists
   if (reminderError || !reminderData) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message: "Invalid reminder_type. No matching reminder found.",
-      },
-      { status: 400 }
+    return NextErrorResponse(
+      "Invalid reminder_type. No matching reminder found.",
+      400
     );
   }
 
@@ -55,19 +44,13 @@ export const POST = async (request: Request) => {
   ]);
   // Handle any errors during insertion
   if (error) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 500,
-        message: "Internal Server Error. Unable to log reminder data.",
-      },
-      { status: 500 }
+    return NextErrorResponse(
+      "Internal Server Error. Unable to log reminder data.",
+      500
     );
   }
 
   // Success response
-  return NextResponse.json({
-    status: "success",
-    message: "Chatbot reminder data logged successfully.",
-  });
+  return NextSuccessResponse("Chatbot reminder data logged successfully.",
+  );
 };

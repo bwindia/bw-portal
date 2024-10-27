@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { authenticateUser } from "../auth";
 import { createClient } from "@/lib/supabase/client";
+import { NextErrorResponse, NextSuccessResponse } from "@/utils/api/response";
+import { authenticateUser } from "@/lib/rean-api/auth";
 
 export const POST = async (request: Request) => {
   const authResponse = await authenticateUser(request);
@@ -11,14 +11,7 @@ export const POST = async (request: Request) => {
 
   // Validate required fields
   if (!mobile || !message || !message_type_id || !time_stamp) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message: "Bad Request. Missing required fields.",
-      },
-      { status: 400 }
-    );
+    return NextErrorResponse("Bad Request. Missing required fields.", 400);
   }
 
   // Create Supabase client
@@ -28,26 +21,19 @@ export const POST = async (request: Request) => {
     {
       mobile: mobile,
       message: message,
-      message_type_id: message_type_id, // Assuming it's a foreign key to the message type
-      time_stamp: time_stamp, // Ensure the format is validated
+      message_type_id: message_type_id,
+      time_stamp: time_stamp,
     },
   ]);
 
   // Handle any errors during insertion
   if (error) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 500,
-        message: "Internal Server Error. Unable to log chatbot message data.",
-      },
-      { status: 500 }
+    return NextErrorResponse(
+      "Internal Server Error. Unable to log chatbot message data.",
+      500
     );
   }
 
   // Success response
-  return NextResponse.json({
-    status: "success",
-    message: "Chatbot message data logged successfully.",
-  });
+  return NextSuccessResponse("Chatbot message data logged successfully.");
 };

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { authenticateUser } from "../auth";
 import { createClient } from "@/lib/supabase/client";
+import { NextErrorResponse, NextSuccessResponse } from "@/utils/api/response";
+import { authenticateUser } from "@/lib/rean-api/auth";
 
 export const POST = async (request: Request) => {
   // Step 1: Authenticate user
@@ -9,44 +9,30 @@ export const POST = async (request: Request) => {
 
   // Step 2: Parse the request body
   const body = await request.json();
-  const { mobile, reason } = body;
+  const { mobile, message_before_stop } = body;
 
   // Step 3: Validate required fields
-  if (!mobile || !reason) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 400,
-        message: "Bad Request. Missing required fields.",
-      },
-      { status: 400 }
-    );
+  if (!mobile || !message_before_stop) {
+    return NextErrorResponse("Bad Request. Missing required fields.", 400);
   }
 
   // Create Supabase client
   const supabase = createClient();
 
   // Step 4: Update user status in the chatbot user table
+
   const { error } = await supabase
     .from("tracker_deregister_user")
-    .update({ status: "deregistered", deregistration_reason: reason })
-    .eq("mobile", mobile);
+    .insert([{ mobile: mobile, message_before_stop: message_before_stop }]);
 
   // Step 5: Handle any errors during update
   if (error) {
-    return NextResponse.json(
-      {
-        status: "error",
-        status_code: 500,
-        message: "Internal Server Error. Unable to deregister user.",
-      },
-      { status: 500 }
+    return NextErrorResponse(
+      "Internal Server Error. Unable to deregister user.",
+      500
     );
   }
 
   // Step 6: Success response
-  return NextResponse.json({
-    status: "success",
-    message: "User deregistered from chatbot successfully.",
-  });
+  return NextSuccessResponse("User deregistered from chatbot successfully.");
 };
