@@ -26,7 +26,7 @@ const Breadcrumbs = ({ path }: Props) => {
         <BreadcrumbItem
           key={`breadcrumb-${item.label}`}
           className="capitalize"
-          href={item?.href || "#"}
+          // href={item?.href || "#"}
         >
           {item.label}
         </BreadcrumbItem>
