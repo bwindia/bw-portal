@@ -26,10 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bwTheme">
       <body className={`${poppins.variable} ${manrope.variable} antialiased`}>
         <Providers>
-          <main className="bwTheme">{children}</main>
+          <main>{children}</main>
         </Providers>
       </body>
     </html>
