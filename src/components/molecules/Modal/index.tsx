@@ -30,16 +30,37 @@ type Props = {
     | "secondary"
     | "success"
     | "warning";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+  scrollBehavior?: "outside" | "inside" | "normal";
   header?: JSX.Element;
+  isButton?: boolean;
 };
 
 const Modal = (props: Props) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+  const handleSuccess = () => {
+    props.onSuccess();
+    onClose();
+  };
 
   return (
-    <>
-      <div onClick={onOpen}>{props.children}</div>
-      <NextUiModal isOpen={isOpen} onOpenChange={onOpenChange}  isDismissable={false} isKeyboardDismissDisabled={true}>
+    <>  
+      <div className="w-fit">
+        {props.isButton ? (
+          <Button onClick={onOpen}>{props.children}</Button>
+        ) : (
+          <div onClick={onOpen}>{props.children}</div>
+        )}
+      </div>
+      <NextUiModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        scrollBehavior={props.scrollBehavior ?? "normal"}
+        isKeyboardDismissDisabled={true}
+        size={props.size ?? "2xl"}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -59,7 +80,7 @@ const Modal = (props: Props) => {
                 </Button>
                 <Button
                   color={props.successButtonColor ?? "secondary"}
-                  onPress={props.onSuccess}
+                  onPress={handleSuccess}
                 >
                   {props.successButton}
                 </Button>
