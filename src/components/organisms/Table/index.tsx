@@ -12,6 +12,7 @@ import {
   Pagination,
   SortDescriptor,
   getKeyValue,
+  Selection,
 } from "@nextui-org/react";
 import { SearchIcon } from "../../../utils/icons";
 import Input from "@/components/atoms/Input";
@@ -22,7 +23,16 @@ interface Props {
   columns: ITableColumn[];
   searchable?: boolean;
   searchPlaceholder?: string;
-  renderCell?: (row: Record<string, any>, columnKey: React.Key) => JSX.Element;
+  initialRowsPerPage?: 5 | 10 | 20 | 50 | 100;
+  headerContent?: JSX.Element;
+  itemsKey?: string;
+  renderCell?: (
+    row: Record<string, any> | any,
+    columnKey: React.Key
+  ) => JSX.Element;
+  selectionMode?: "single" | "multiple" | "none";
+  onSelectionChange?: (keys: Selection) => void;
+  selectedKeys?: Selection;
 }
 
 const Table = ({
@@ -30,6 +40,11 @@ const Table = ({
   searchPlaceholder = "Search by name",
   data,
   columns,
+  itemsKey = "user_id",
+  initialRowsPerPage = 10,
+  selectionMode = "none",
+  onSelectionChange,
+  selectedKeys,
   ...props
 }: Props) => {
   const [filterValue, setFilterValue] = useState("");
@@ -58,24 +73,19 @@ const Table = ({
     return filteredData;
   }, [data, hasSearchFilter, searchable, searchableKeys, filterValue]);
 
-  const rowsPerPage = 8;
+  const [rowsPerPage, setRowsPerPage] = useState<number>(initialRowsPerPage);
   const [page, setPage] = useState(1);
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems]);
 
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     // column: "firstName",
     // direction: "ascending",
   });
 
-  const sortedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
+  const sortedFilteredItems = useMemo(() => {
+    if (!sortDescriptor.column) return filteredItems;
+
+    return [...filteredItems].sort((a, b) => {
       const first = a[
         sortDescriptor.column as keyof Record<string, any>
       ] as string;
@@ -86,7 +96,22 @@ const Table = ({
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, items]);
+  }, [sortDescriptor, filteredItems]);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return sortedFilteredItems.slice(start, end);
+  }, [page, rowsPerPage, sortedFilteredItems]);
+
+  const onRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    },
+    []
+  );
 
   const onSearchChange = useCallback((value?: string) => {
     if (value) {
@@ -105,8 +130,8 @@ const Table = ({
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
-        {searchable && (
-          <div className="flex items-end justify-between gap-3">
+        <div className="flex items-end justify-between gap-3">
+          {searchable && (
             <Input
               isClearable
               className="w-full sm:max-w-[44%]"
@@ -116,11 +141,19 @@ const Table = ({
               onClear={() => onClear()}
               onValueChange={onSearchChange}
             />
-          </div>
-        )}
+          )}
+          {props.headerContent}
+        </div>
       </div>
     );
-  }, [searchable, searchPlaceholder, filterValue, onSearchChange, onClear]);
+  }, [
+    searchable,
+    searchPlaceholder,
+    filterValue,
+    onSearchChange,
+    props.headerContent,
+    onClear,
+  ]);
 
   return (
     <NextUiTable
@@ -129,16 +162,33 @@ const Table = ({
       topContentPlacement="outside"
       bottomContent={
         pages > 0 ? (
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-between items-center">
+            <span className="text-default-400 text-small">
+              Total {data.length} entries
+            </span>
             <Pagination
               isCompact
               showControls
               showShadow
-              color="secondary"
+              color="primary"
               page={page}
               total={pages}
               onChange={(page) => setPage(page)}
             />
+            <label className="flex items-center text-default-400 text-small">
+              Rows per page:
+              <select
+                className="bg-transparent outline-none text-default-400 text-small"
+                onChange={onRowsPerPageChange}
+                value={rowsPerPage}
+              >
+                {[5, 10, 20, 50, 100].map((item) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         ) : null
       }
@@ -148,17 +198,24 @@ const Table = ({
       classNames={{
         wrapper: "min-h-[222px]",
       }}
+      selectionMode={selectionMode}
+      selectedKeys={selectedKeys}
+      onSelectionChange={onSelectionChange}
     >
       <TableHeader columns={columns}>
         {(column) => (
-          <TableColumn key={column.key} allowsSorting={column.isSortable}>
+          <TableColumn 
+            key={column.key} 
+            allowsSorting={column.isSortable}
+            align={column.key === "actions" ? "center" : "start"}
+          >
             {column.label}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={sortedItems} emptyContent={"No users to display."}>
+      <TableBody items={items} emptyContent={"No users to display."}>
         {(item) => (
-          <TableRow key={item?.user_id}>
+          <TableRow key={item[itemsKey]}>
             {(columnKey) => (
               <TableCell>
                 {props.renderCell
