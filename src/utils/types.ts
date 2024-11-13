@@ -21,3 +21,8 @@ export interface INavItem {
   path?: string;
   icon?: string;
 }
+
+export interface ISelectItem {
+  label: string;
+  value: string;
+}

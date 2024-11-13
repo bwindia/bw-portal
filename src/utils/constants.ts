@@ -1,5 +1,12 @@
-import { BRIDGES_PAGE_ROUTE, USERS_PAGE_ROUTE } from "./routes";
-import { INavItem, ITableColumn, IUser } from "./types";
+import {
+  BRIDGES_PAGE_ROUTE,
+  SCHEDULE_DONATION_PAGE_ROUTE,
+  TRACK_BLOOD_DONATION_CAMP_PAGE_ROUTE,
+  TRACK_DONATION_PAGE_ROUTE,
+  TRACK_TRANSFUSION_PAGE_ROUTE,
+  USERS_PAGE_ROUTE,
+} from "./routes";
+import { INavItem, ISelectItem, ITableColumn, IUser } from "./types";
 
 export const BLOOD_WARRIORS = "Blood Warriors";
 
@@ -51,12 +58,126 @@ export const ADMIN_NAV_BAR: INavItem[] = [
   },
   {
     icon: "volunteer_activism",
-    label: "Volunteers",
-    path: "/products",
+    label: "Schedule Donation",
+    path: SCHEDULE_DONATION_PAGE_ROUTE,
   },
   {
-    icon: "diversity_3",
-    label: "Donors",
-    path: "/orders",
+    icon: "water_drop",
+    label: "Track Donation",
+    path: TRACK_DONATION_PAGE_ROUTE,
+  },
+  {
+    icon: "vaccines",
+    label: "Track Transfusion",
+    path: TRACK_TRANSFUSION_PAGE_ROUTE,
+  },
+  {
+    icon: "camping",
+    label: "Track Blood Donation Camp",
+    path: TRACK_BLOOD_DONATION_CAMP_PAGE_ROUTE,
+  },
+];
+
+export const DONATION_TYPE: ISelectItem[] = [
+  {
+    label: "One Time Donation",
+    value: "1",
+  },
+  {
+    label: "Blood Bridge Donation",
+    value: "2",
+  },
+  {
+    label: "Emergency Donation",
+    value: "3",
+  },
+];
+
+export const BLOOD_GROUP: ISelectItem[] = [
+  {
+    label: "A Positive",
+    value: "A Positive",
+  },
+  {
+    label: "A Negative",
+    value: "A Negative",
+  },
+  {
+    label: "B Positive",
+    value: "B Positive",
+  },
+  {
+    label: "B Negative",
+    value: "B Negative",
+  },
+  {
+    label: "AB Positive",
+    value: "AB Positive",
+  },
+  {
+    label: "AB Negative",
+    value: "AB Negative",
+  },
+  {
+    label: "O Positive",
+    value: "O Positive",
+  },
+  {
+    label: "O Negative",
+    value: "O Negative",
+  },
+];
+
+export const BLOOD_TYPE: ISelectItem[] = [
+  {
+    label: "Whole Blood",
+    value: "1",
+  },
+  {
+    label: "Red Blood Cells",
+    value: "2",
+  },
+  {
+    label: "Plasma",
+    value: "3",
+  },
+  {
+    label: "Platelets",
+    value: "4",
+  },
+  {
+    label: "Cryoprecipitate",
+    value: "5",
+  },
+  {
+    label: "Granulocytes",
+    value: "6",
+  },
+];
+
+export const DONATION_STATUS_TYPE: ISelectItem[] = [
+  {
+    label: "Scheduled",
+    value: "1",
+  },
+  {
+    label: "Cancelled",
+    value: "2",
+  },
+  {
+    label: "Complete",
+    value: "3",
+  },
+  {
+    label: "Rejected",
+    value: "4",
+  },
+  {
+    label: "Absent",
+    value: "5",
+  },
+  {
+    label: "Pending",
+    value: "6",
   },
 ];
