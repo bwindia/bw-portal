@@ -1,25 +1,23 @@
 import React from "react";
 import SideNav from "@/components/organisms/SideNav";
 import { ADMIN_NAV_BAR } from "@/utils/constants";
-import { createClient } from "@/lib/supabase/server";
-import { User } from "@supabase/supabase-js";
 import { IUser } from "@/utils/types";
 import { redirect } from "next/navigation";
 import { SIGN_IN_PATH } from "@/utils/routes";
+import { getUserInfo } from "@/lib/supabase/user";
 
 const AdminLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const getUserDetails = (user: User | null): IUser => {
-    if (user) {
+  const { data: user, error } = await getUserInfo();
+  const getUserDetails = (user: IUser | null): IUser => {
+    if (error) {
+      redirect(SIGN_IN_PATH);
+    } else if (user) {
       const profile: IUser = {
-        name: user.email ?? "",
+        name: user.name ?? "",
         email: user.email ?? "",
       };
       return profile;
