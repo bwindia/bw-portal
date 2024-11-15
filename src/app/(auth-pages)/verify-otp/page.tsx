@@ -43,7 +43,7 @@ const VerifyOtpPage = ({ searchParams }: { searchParams: Message }) => {
               Sign In to your Account
             </h2>
             <p className="my-6 text-content4-foreground text-center">
-              Enter OTP received on +91{searchParams.message}
+              Enter OTP received on {searchParams.message}
             </p>
             <form className="flex flex-col items-center gap-3">
               <div className="flex gap-4 justify-center mb-6">
