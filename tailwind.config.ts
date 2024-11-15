@@ -42,7 +42,7 @@ const config: Config = {
               700: "#AD2057",
               800: "#8B144E",
               900: "#730C48",
-              DEFAULT: "#F14164",
+              DEFAULT: "#444",
             },
           },
           layout: {
