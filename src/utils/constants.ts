@@ -10,6 +10,8 @@ import { INavItem, ISelectItem, ITableColumn, IUser } from "./types";
 
 export const BLOOD_WARRIORS = "Blood Warriors";
 
+export const BLOOD_WARRIORS_ORGANIZATION_ID = "O01";
+
 export const USERS_TABLE_COLUMNS: ITableColumn[] = [
   {
     key: "name",
@@ -96,35 +98,35 @@ export const DONATION_TYPE: ISelectItem[] = [
 export const BLOOD_GROUP: ISelectItem[] = [
   {
     label: "A Positive",
-    value: "A Positive",
+    value: "1",
   },
   {
     label: "A Negative",
-    value: "A Negative",
+    value: "2",
   },
   {
     label: "B Positive",
-    value: "B Positive",
+    value: "3",
   },
   {
     label: "B Negative",
-    value: "B Negative",
+    value: "4",
   },
   {
     label: "AB Positive",
-    value: "AB Positive",
+    value: "5",
   },
   {
     label: "AB Negative",
-    value: "AB Negative",
+    value: "6",
   },
   {
     label: "O Positive",
-    value: "O Positive",
+    value: "7",
   },
   {
     label: "O Negative",
-    value: "O Negative",
+    value: "8",
   },
 ];
 
@@ -179,5 +181,28 @@ export const DONATION_STATUS_TYPE: ISelectItem[] = [
   {
     label: "Pending",
     value: "6",
+  },
+];
+
+export const GENDER: ISelectItem[] = [
+  {
+    label: "Male",
+    value: "1",
+  },
+  {
+    label: "Female",
+    value: "2",
+  },
+  {
+    label: "Non-binary",
+    value: "3",
+  },
+  {
+    label: "Other",
+    value: "4",
+  },
+  {
+    label: "Prefer not to say",
+    value: "5",
   },
 ];
