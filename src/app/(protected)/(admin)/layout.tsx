@@ -18,7 +18,7 @@ const AdminLayout = async ({
     } else if (user) {
       const profile: IUser = {
         name: user.name ?? "",
-        email: user.email ?? "",
+        email: user.email ?? user.mobile ?? "",
       };
       return profile;
     } else {

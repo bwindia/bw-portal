@@ -13,6 +13,7 @@ export const HOME_PAGE_ROUTE = "/home";
 export const ADMIN_PAGE_ROUTE = "/a";
 export const USERS_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/users";
 export const ADD_USER_PAGE_ROUTE = USERS_PAGE_ROUTE + "/add-user";
+export const EDIT_USER_PAGE_ROUTE = (id: string) => USERS_PAGE_ROUTE + `/${id}/edit`;
 export const BRIDGES_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/bridges";
 export const ADD_BRIDGE_PAGE_ROUTE = BRIDGES_PAGE_ROUTE + "/new";
 export const BRIDGE_DETAILS_PAGE_ROUTE = (slug: string) => BRIDGES_PAGE_ROUTE + `/${slug}`;
@@ -24,6 +25,7 @@ export const TRACK_DONATION_PAGE_ROUTE = FORMS_ROUTE + "/track-donation";
 export const TRACK_TRANSFUSION_PAGE_ROUTE = FORMS_ROUTE + "/track-transfusion";
 export const TRACK_BLOOD_DONATION_CAMP_PAGE_ROUTE = FORMS_ROUTE + "/track-blood-donation-camp";
 
+export const LANDING_PAGE_ROUTE = USERS_PAGE_ROUTE;
 // Donor routes
 export const DONOR_PAGE_ROUTE = "/d";
 

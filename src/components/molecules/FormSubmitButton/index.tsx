@@ -20,14 +20,19 @@ const FormSubmitButton = ({
 
   return (
     <div className="flex flex-col gap-3">
-    <Button type="submit" disabled={pending} aria-disabled={pending} {...props}>
-      {pending ? pendingText : children}
-    </Button>
-    {props.errorMessage && !pending && (
-      <FormMessage message={props.errorMessage} />
-    )}
+      <Button
+        type="submit"
+        disabled={pending}
+        aria-disabled={pending}
+        {...props}
+      >
+        {pending ? pendingText : children}
+      </Button>
+      {props.errorMessage && !pending && (
+        <FormMessage message={props.errorMessage} />
+      )}
     </div>
   );
 };
 
-export default FormSubmitButton
+export default FormSubmitButton;

@@ -1,18 +1,19 @@
 "use client";
-import { User, Tooltip, Chip } from "@nextui-org/react";
-import { DeleteIcon, EditIcon, EyeIcon } from "@/utils/icons";
-import Modal from "@/components/molecules/Modal";
+import { User, Tooltip, Chip, Link } from "@nextui-org/react";
+import { EditIcon } from "@/utils/icons";
 import React from "react";
 import { ITableColumn } from "@/utils/types";
+import { EDIT_USER_PAGE_ROUTE } from "@/utils/routes";
 
 interface User {
-  id: string;
+  user_id: string;
   name: string;
   mobile: string;
   email: string;
   gender: string;
   is_active: boolean;
   blood_group: string;
+  roles: { role: string }[];
 }
 
 export const USER_COLUMNS: ITableColumn[] = [
@@ -25,14 +26,15 @@ export const USER_COLUMNS: ITableColumn[] = [
   {
     key: "mobile",
     label: "Phone",
-  },
-  {
-    key: "gender",
-    label: "Gender",
+    isSearchable: true,
   },
   {
     key: "blood_group",
     label: "Blood Group",
+  },
+  {
+    key: "roles",
+    label: "Roles",
   },
   {
     key: "is_active",
@@ -79,40 +81,32 @@ export const renderUserTableCell = (user: User, columnKey: React.Key) => {
           className="capitalize"
           color={user.is_active ? "success" : "danger"}
           size="sm"
-          variant="flat"
+          variant="dot"
         >
           {user.is_active ? "Active" : "Inactive"}
         </Chip>
+      );
+    case "roles":
+      return (
+        <div className="flex gap-1">
+          {user.roles.map((role) => (
+            <Chip variant="bordered" size="sm" key={role.role}>
+              {role.role}
+            </Chip>
+          ))}
+        </div>
       );
     case "createdAt":
       return <span>{new Date(cellValue).toLocaleDateString()}</span>;
     case "actions":
       return (
         <div className="relative flex items-center gap-4">
-          <Tooltip content="Details">
-            <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
-              <EyeIcon />
-            </span>
-          </Tooltip>
           <Tooltip content="Edit user">
-            <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
-              <EditIcon />
-            </span>
-          </Tooltip>
-          <Tooltip color="danger" content="Delete user">
-            <span className="cursor-pointer text-lg text-danger active:opacity-50">
-              <Modal
-                body={<>Are you sure you want to delete it</>}
-                onSuccess={() => {
-                  console.log(
-                    "deleting user of id: " + user["firstName" as keyof object]
-                  );
-                }}
-                successButton="Delete"
-              >
-                <DeleteIcon />
-              </Modal>
-            </span>
+            <Link href={EDIT_USER_PAGE_ROUTE(user.user_id)}>
+              <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
+                <EditIcon />
+              </span>
+            </Link>
           </Tooltip>
         </div>
       );
