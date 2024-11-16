@@ -15,7 +15,7 @@ export const USERS_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/users";
 export const ADD_USER_PAGE_ROUTE = USERS_PAGE_ROUTE + "/add-user";
 export const EDIT_USER_PAGE_ROUTE = (id: string) => USERS_PAGE_ROUTE + `/${id}/edit`;
 export const BRIDGES_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/bridges";
-export const ADD_BRIDGE_PAGE_ROUTE = BRIDGES_PAGE_ROUTE + "/new";
+export const ADD_BRIDGE_PAGE_ROUTE = BRIDGES_PAGE_ROUTE + "/add-bridge";
 export const BRIDGE_DETAILS_PAGE_ROUTE = (slug: string) => BRIDGES_PAGE_ROUTE + `/${slug}`;
 export const EDIT_BRIDGE_PAGE_ROUTE = (slug: string) => BRIDGES_PAGE_ROUTE + `/${slug}/edit`;
 

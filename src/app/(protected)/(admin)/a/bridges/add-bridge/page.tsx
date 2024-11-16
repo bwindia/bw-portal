@@ -12,7 +12,6 @@ const CreateBridgePage = () => {
           { label: "Create New Bridge" },
         ]}
       />
-      <h1 className="text-2xl font-semibold my-4">Create New Bridge</h1>
       <BridgeForm />
     </div>
   );

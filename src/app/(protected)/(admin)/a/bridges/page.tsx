@@ -1,10 +1,14 @@
+import Breadcrumbs from "@/components/molecules/Breadcrumbs";
 import Button from "@/components/atoms/Button";
 import Table from "@/components/organisms/Table";
 import { createClient } from "@/lib/supabase/client";
 import { ADD_BRIDGE_PAGE_ROUTE } from "@/utils/routes";
 import Link from "next/link";
 import React from "react";
-import { BRIDGE_COLUMNS, renderBridgeTableCell } from "@/app/(protected)/(admin)/a/bridges/columns";
+import {
+  BRIDGE_COLUMNS,
+  renderBridgeTableCell,
+} from "@/app/(protected)/(admin)/a/bridges/columns";
 
 const BridgesPage = async () => {
   const supabase = createClient();
@@ -26,8 +30,13 @@ const BridgesPage = async () => {
 
   return (
     <div>
-      <div>
-        <div className="float-right">
+      <Breadcrumbs />
+      <Table
+        searchable
+        data={data as Record<string, any>[]}
+        renderCell={renderBridgeTableCell}
+        columns={BRIDGE_COLUMNS}
+        headerContent={
           <Link href={ADD_BRIDGE_PAGE_ROUTE}>
             <Button
               startContent={
@@ -37,14 +46,8 @@ const BridgesPage = async () => {
               Add Bridge
             </Button>
           </Link>
-        </div>
-        <Table
-          searchable
-          data={data as Record<string, any>[]}
-          renderCell={renderBridgeTableCell}
-          columns={BRIDGE_COLUMNS}
-        />
-      </div>
+        }
+      />
     </div>
   );
 };

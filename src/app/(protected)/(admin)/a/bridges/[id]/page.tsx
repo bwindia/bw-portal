@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
 import AssignBridgeForRoleView from "@/components/organisms/AssignBridgeForRoleView";
-import { Divider } from "@nextui-org/react";
 import Breadcrumbs from "@/components/molecules/Breadcrumbs";
-import { BRIDGES_PAGE_ROUTE } from "@/utils/routes";
+import { BRIDGES_PAGE_ROUTE, EDIT_BRIDGE_PAGE_ROUTE } from "@/utils/routes";
 import Table from "@/components/organisms/Table";
+import Link from "next/link";
+import { EditIcon } from "@/utils/icons";
 
 const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const bridgeId = (await params).id;
@@ -38,8 +39,8 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
   //   .leftJoin('mapping_user_role', 'user_data.id', 'mapping_user_role.user_id') // Join with mapping_user_role to filter by role_id
   //   .leftJoin('mapping_bridge_user', 'user_data.id', 'mapping_bridge_user.user_id'); // Join with mapping_bridge_user to check if assigned to a bridge
 
-  if (error && bridgeUsersError) {
-    throw bridgeUsersError;
+  if (error || bridgeUsersError) {
+    throw error || bridgeUsersError;
   }
 
   return (
@@ -50,19 +51,27 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
           { label: bridge_patient_info.bridge_name },
         ]}
       />
-      <div className="flex flex-col gap-2 text-sm">
-        <div className="flex gap-8">
-          <span className="font-semibold w-[250px] text-right">
-            Bridge Name:
+      <div className="flex justify-end">
+        <Link
+          className="text-default-400 hover:text-default-500"
+          href={EDIT_BRIDGE_PAGE_ROUTE(bridgeId)}
+        >
+          {/* <Tooltip content="Edit Bridge Details"> */}
+          <span className="flex items-center gap-1">
+            <EditIcon />
+            <span className="text-sm hidden sm:block">Edit details</span>
           </span>
+          {/* </Tooltip> */}
+        </Link>
+      </div>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex">
+          <span className="font-semibold w-[180px]">Bridge Name:</span>
           <span>{bridge_patient_info?.bridge_name}</span>
         </div>
-        <Divider />
-        <div className="flex justify-between">
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">
-              Guardian:
-            </span>
+        <div className="flex sm:flex-row flex-col gap-2 justify-between">
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Guardian:</span>
             <span className="flex gap-1">
               <span className="text-bold capitalize">
                 {bridge_patient_info.guardian_name}
@@ -72,8 +81,8 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
               </span>
             </span>
           </div>
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">Mobile:</span>
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Mobile:</span>
             <span>
               {bridge_patient_info.guardian_mobile}
               {bridge_patient_info?.secondary_mobile && (
@@ -84,18 +93,13 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
             </span>
           </div>
         </div>
-        <Divider />
-        <div className="flex justify-between">
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">
-              Blood Group:
-            </span>
+        <div className="flex sm:flex-row flex-col gap-2 justify-between">
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Blood Group:</span>
             <span>{bridge_patient_info?.blood_group}</span>
           </div>
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">
-              Blood Requirement:
-            </span>
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Blood Requirement:</span>
             <span>
               <span>{bridge_patient_info?.no_of_units} unit</span>
               <span className="text-default-400">
@@ -104,40 +108,47 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
             </span>
           </div>
         </div>
-        <Divider />
-        <div className="flex justify-between">
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">Gender:</span>
+        <div className="flex sm:flex-row flex-col gap-2 justify-between">
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Gender:</span>
             <span>{bridge_patient_info?.gender}</span>
           </div>
-          <div className="flex gap-8 w-[50%]">
-            <span className="font-semibold w-[250px] text-right">
-              Date of Birth:
-            </span>
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Date of Birth:</span>
             <span>{bridge_patient_info?.date_of_birth}</span>
           </div>
         </div>
-        <Divider />
-        <div className="flex gap-8 items-center">
-          <span className="font-semibold w-[250px] text-right">
-            Volunteers:
-          </span>
-          <div className="flex gap-2 items-center">
-            {bridgeUsers?.filter((user) => user.role_id === 3).length
-              ? bridgeUsers
-                  ?.filter((user) => user.role_id === 3)
-                  .map((user) => user.name)
-                  .join(", ")
-              : "No volunteers assigned"}
-            <AssignBridgeForRoleView
-              roleName="Volunteers"
-              roleId={3}
-              bridge={bridge_patient_info}
-            />
+        <div className="flex sm:flex-row flex-col gap-2 justify-between">
+          <div className="flex sm:w-[50%] w-full">
+            <span className="font-semibold w-[180px]">Volunteers:</span>
+            <div className="flex gap-2 items-center">
+              {bridgeUsers?.filter((user) => user.role_id === 3).length
+                ? bridgeUsers
+                    ?.filter((user) => user.role_id === 3)
+                    .map((user) => user.name)
+                    .join(", ")
+                : "No volunteers assigned"}
+            </div>
           </div>
         </div>
       </div>
       <Table
+        headerContent={
+          <div className="w-full">
+            <div className="flex flex-row-reverse gap-2">
+              <AssignBridgeForRoleView
+                roleName="Volunteers"
+                roleId={3}
+                bridge={bridge_patient_info}
+              />
+              <AssignBridgeForRoleView
+                roleName="Bridge Donors"
+                roleId={6}
+                bridge={bridge_patient_info}
+              />
+            </div>
+          </div>
+        }
         columns={[
           { key: "name", label: "Name" },
           { key: "phone_number", label: "Phone Number" },
@@ -148,11 +159,6 @@ const BridgePage = async ({ params }: { params: Promise<{ id: string }> }) => {
         data={bridgeUsers?.filter((user) => user.role_id === 6) as any[]}
       />
       <br />
-      <AssignBridgeForRoleView
-        roleName="Bridge Donors"
-        roleId={6}
-        bridge={bridge_patient_info}
-      />
     </div>
   );
 };

@@ -206,3 +206,38 @@ export const GENDER: ISelectItem[] = [
     value: "5",
   },
 ];
+
+export const GUARDIAN_RELATIONSHIP: ISelectItem[] = [
+  {
+    label: "Father",
+    value: "1",
+  },
+  {
+    label: "Mother",
+    value: "2",
+  },
+  {
+    label: "Son",
+    value: "3",
+  },
+  {
+    label: "Daughter",
+    value: "4",
+  },
+  {
+    label: "Spouse",
+    value: "5",
+  },
+  {
+    label: "Uncle",
+    value: "6",
+  },
+  {
+    label: "Aunt",
+    value: "7",
+  },
+  {
+    label: "Other",
+    value: "8",
+  },
+];

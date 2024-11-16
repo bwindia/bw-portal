@@ -3,8 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserInfo } from "@/lib/supabase/user";
 import { filterFormData } from "@/utils/functions";
-import { BRIDGES_PAGE_ROUTE } from "@/utils/routes";
+import { BRIDGE_DETAILS_PAGE_ROUTE, BRIDGES_PAGE_ROUTE } from "@/utils/routes";
 import { Message } from "@/utils/types";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 // interface BridgeFormFields {
@@ -32,6 +33,13 @@ export const createBridgeAction = async (
     formFields.created_by = user.user_id;
   }
 
+  // Remove fields with empty values
+  Object.keys(formFields).forEach((key) => {
+    if (formFields[key] === "") {
+      delete formFields[key];
+    }
+  });
+
   const supabase = createClient();
 
   const { error } = await supabase
@@ -41,12 +49,11 @@ export const createBridgeAction = async (
   if (error) {
     return { error: error.message };
   }
+  revalidatePath(BRIDGES_PAGE_ROUTE);
   redirect(BRIDGES_PAGE_ROUTE);
-  //   return { success: "Bridge created successfully" };
 };
 
 export const editBridgeAction = async (
-//   bridgeId: string,
   state: undefined | Message,
   formData: FormData
 ) => {
@@ -54,20 +61,28 @@ export const editBridgeAction = async (
   const { data: user } = await getUserInfo();
 
   if (user) {
-    formFields.updated_by = user.user_id;
-    formFields.updated_at = new Date().toISOString();
+    formFields.last_modified_by = user.user_id;
   }
+
+  // Remove fields with empty values
+  Object.keys(formFields).forEach((key) => {
+    if (formFields[key] === "") {
+      delete formFields[key];
+    }
+  });
 
   const supabase = createClient();
 
   const { error } = await supabase
     .from("bridge_patient_info")
     .update(formFields)
-    .eq("bridge_id", formFields.bridgeId);
+    .eq("bridge_id", formFields.bridge_id);
 
   if (error) {
     return { error: error.message };
   }
-  redirect(BRIDGES_PAGE_ROUTE);
-  //   return { success: "Bridge updated successfully" };
+
+  revalidatePath(BRIDGES_PAGE_ROUTE);
+  revalidatePath(BRIDGE_DETAILS_PAGE_ROUTE(formFields?.bridge_id as string));
+  redirect(BRIDGE_DETAILS_PAGE_ROUTE(formFields?.bridge_id as string));
 };
