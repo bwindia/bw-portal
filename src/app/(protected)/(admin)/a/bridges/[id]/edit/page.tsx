@@ -16,23 +16,12 @@ const EditBridgePage = async ({ params }: EditBridgePageProps) => {
 
   const { data: bridge, error } = await supabase
     .from("bridge_patient_info")
-    .select(`
-      bridge_name,
-      guardian_name,
-      guardian_relationship,
-      guardian_mobile,
-      secondary_mobile,
-      blood_group,
-      no_of_units,
-      frequency_in_days,
-      gender,
-      date_of_birth
-    `)
+    .select("*, ...user_data!bridge_info_user_id_fkey(user_name: name)")
     .eq("bridge_id", bridgeId)
     .single();
 
   if (error) {
-    return <div>Error fetching bridge data: {error.message}</div>;
+    throw error;
   }
 
   return (
@@ -40,11 +29,11 @@ const EditBridgePage = async ({ params }: EditBridgePageProps) => {
       <Breadcrumbs
         path={[
           { label: "Bridges", href: BRIDGES_PAGE_ROUTE },
-          { label: "Edit Bridge" },
+          { label: "Edit Bridge", href: "#" },
+          { label: bridge?.bridge_name },
         ]}
       />
-      <h1 className="text-2xl font-semibold my-4">Edit Bridge</h1>
-      <BridgeForm initialData={bridge} bridgeId={bridgeId} />
+      <BridgeForm bridgeData={bridge} />
     </div>
   );
 };

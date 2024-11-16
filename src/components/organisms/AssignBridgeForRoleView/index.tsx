@@ -34,7 +34,6 @@ const AssignBridgeForRoleView = ({ roleId, roleName, bridge }: Props) => {
       }
       const { data, error } = await query;
       if (error) throw error;
-      console.log(data);
       setData(data);
     };
     fetchUserByRole();
@@ -57,7 +56,7 @@ const AssignBridgeForRoleView = ({ roleId, roleName, bridge }: Props) => {
       });
       // Optionally, you can add success notifications here
     } catch (error) {
-      console.error("Failed to assign users:", error);
+      return error;
       // Optionally, handle errors (e.g., show a notification)
     }
   };
@@ -65,7 +64,7 @@ const AssignBridgeForRoleView = ({ roleId, roleName, bridge }: Props) => {
   return (
     <Modal
       size="2xl"
-      scrollBehavior="outside"
+      // scrollBehavior="outside"
       header={<div className="text-lg font-semibold">Assign {roleName}</div>}
       body={
         <div>

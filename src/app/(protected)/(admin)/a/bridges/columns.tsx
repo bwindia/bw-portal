@@ -4,7 +4,10 @@ import { EditIcon, EyeIcon } from "@/utils/icons";
 import React from "react";
 import { ITableColumn } from "@/utils/types";
 import Link from "next/link";
-import { BRIDGE_DETAILS_PAGE_ROUTE } from "@/utils/routes";
+import {
+  BRIDGE_DETAILS_PAGE_ROUTE,
+  EDIT_BRIDGE_PAGE_ROUTE,
+} from "@/utils/routes";
 
 interface Bridge {
   id: string;
@@ -75,12 +78,14 @@ export const renderBridgeTableCell = (bridge: Bridge, columnKey: React.Key) => {
       return (
         <div className="relative flex items-center gap-4">
           <Tooltip content="Details">
-            <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
-              <EyeIcon />
-            </span>
+            <Link href={BRIDGE_DETAILS_PAGE_ROUTE(bridge.id)}>
+              <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
+                <EyeIcon />
+              </span>
+            </Link>
           </Tooltip>
           <Tooltip content="Edit bridge">
-            <Link href={BRIDGE_DETAILS_PAGE_ROUTE(bridge.id)}>
+            <Link href={EDIT_BRIDGE_PAGE_ROUTE(bridge.id)}>
               <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
                 <EditIcon />
               </span>
