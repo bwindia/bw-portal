@@ -13,6 +13,7 @@ export const HOME_PAGE_ROUTE = "/home";
 export const ADMIN_PAGE_ROUTE = "/a";
 export const USERS_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/users";
 export const ADD_USER_PAGE_ROUTE = USERS_PAGE_ROUTE + "/add-user";
+export const IMPORT_USERS_PAGE_ROUTE = USERS_PAGE_ROUTE + "/import";
 export const EDIT_USER_PAGE_ROUTE = (id: string) => USERS_PAGE_ROUTE + `/${id}/edit`;
 export const BRIDGES_PAGE_ROUTE = ADMIN_PAGE_ROUTE + "/bridges";
 export const ADD_BRIDGE_PAGE_ROUTE = BRIDGES_PAGE_ROUTE + "/add-bridge";
