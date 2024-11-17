@@ -29,11 +29,11 @@ const AdminLayout = async ({
 
   return (
     <>
-      <main className="h-svh overflow-hidden flex">
+      <main className="h-svh overflow-hidden flex sm:flex-row flex-col">
         <div>
           <SideNav items={ADMIN_NAV_BAR} user={profile} />
         </div>
-        <div className="overflow-auto p-6 w-full">{children}</div>
+        <div className="overflow-auto px-6 pb-6 w-full">{children}</div>
       </main>
     </>
   );
