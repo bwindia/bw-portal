@@ -24,6 +24,7 @@ const FormSubmitButton = ({
         type="submit"
         disabled={pending}
         aria-disabled={pending}
+        isLoading={pending}
         {...props}
       >
         {pending ? pendingText : children}
