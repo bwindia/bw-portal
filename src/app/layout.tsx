@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import { Manrope, Poppins } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
+// const poppins = Poppins({
+//   subsets: ["latin"],
+//   variable: "--font-poppins",
+//   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+// });
 
-const manrope = Manrope({
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-manrope",
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bwTheme">
-      <body className={`${poppins.variable} ${manrope.variable} antialiased`}>
+      <body className={`${nunito.className} antialiased`}>
         <Providers>
           <main>{children}</main>
         </Providers>
