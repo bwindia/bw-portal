@@ -33,42 +33,28 @@ const TrackDonationForm = () => {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchUserNames = async () => {
-      const { data, error } = await supabase
-        .from("user_data")
-        .select("user_id, name");
+    const fetchData = async () => {
+      const [
+        { data: userData },
+        { data: bridgeData },
+        { data: bloodCenterData },
+      ] = await Promise.all([
+        supabase.from("user_data").select("user_id, name"),
+        supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
+        supabase.from("master_blood_center").select("blood_center_id, name"),
+      ]);
 
-      if (error) throw error;
-      console.log(data);
-      setUserNames(data);
+      setUserNames(userData || []);
+      setBridges(bridgeData || []);
+      setBloodCenters(bloodCenterData || []);
     };
-    fetchUserNames();
-    const fetchBridges = async () => {
-      const { data, error } = await supabase
-        .from("bridge_patient_info")
-        .select("bridge_id, bridge_name");
-
-      if (error) throw error;
-
-      setBridges(data);
-    };
-    fetchBridges();
-    const fetchBloodCenters = async () => {
-      const { data, error } = await supabase
-        .from("master_blood_center")
-        .select("blood_center_id, name");
-
-      if (error) throw error;
-
-      setBloodCenters(data);
-    };
-    fetchBloodCenters();
+    fetchData();
   }, [supabase]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             variant="faded"
             label="Name"
@@ -90,12 +76,12 @@ const TrackDonationForm = () => {
             ))}
           </Autocomplete>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2 hidden sm:block">
           <input hidden name="user_id" value={autoCompleteFields.user_id} />
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Select
             variant="faded"
             label="Donation type"
@@ -113,7 +99,7 @@ const TrackDonationForm = () => {
             ))}
           </Select>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           {donationType === "2" && (
             <>
               <Autocomplete
@@ -149,8 +135,8 @@ const TrackDonationForm = () => {
           )}
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             variant="faded"
             name="blood_center_id"
@@ -181,7 +167,7 @@ const TrackDonationForm = () => {
             value={autoCompleteFields.blood_center_id}
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Select
             variant="faded"
             label="Blood type"
@@ -199,8 +185,8 @@ const TrackDonationForm = () => {
           </Select>
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Select
             variant="faded"
             label="Donation status"
@@ -216,7 +202,7 @@ const TrackDonationForm = () => {
             ))}
           </Select>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <DatePicker
             variant="faded"
             name="donation_date"
@@ -227,7 +213,7 @@ const TrackDonationForm = () => {
           />
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full">
           <Textarea
             variant="faded"
@@ -238,10 +224,11 @@ const TrackDonationForm = () => {
           />
         </div>
       </div>
-      created by - user id submitted by
-      <FormSubmitButton errorMessage={state} pendingText="Submitting">
-        Submit
-      </FormSubmitButton>
+      <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-2">
+        <FormSubmitButton errorMessage={state} pendingText="Submitting">
+          Submit
+        </FormSubmitButton>
+      </div>
     </form>
   );
 };

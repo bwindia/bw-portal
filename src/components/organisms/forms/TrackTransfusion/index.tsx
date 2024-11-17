@@ -19,32 +19,23 @@ const TrackTransfusionForm = () => {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchBridges = async () => {
-      const { data, error } = await supabase
-        .from("bridge_patient_info")
-        .select("bridge_id, bridge_name");
+    const fetchData = async () => {
+      const [{ data: bridgesData }, { data: bloodCentersData }] =
+        await Promise.all([
+          supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
+          supabase.from("master_blood_center").select("blood_center_id, name"),
+        ]);
 
-      if (error) throw error;
-
-      setBridges(data);
+      setBridges(bridgesData || []);
+      setBloodCenters(bloodCentersData || []);
     };
-    fetchBridges();
-    const fetchBloodCenters = async () => {
-      const { data, error } = await supabase
-        .from("master_blood_center")
-        .select("blood_center_id, name");
-
-      if (error) throw error;
-
-      setBloodCenters(data);
-    };
-    fetchBloodCenters();
+    fetchData();
   }, [supabase]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             variant="faded"
             label="Blood Bridge"
@@ -65,13 +56,9 @@ const TrackTransfusionForm = () => {
               </AutocompleteItem>
             ))}
           </Autocomplete>
-        </div>
-        <div className="w-1/2">
           <input hidden name="bridge_id" value={autoCompleteFields.bridge_id} />
         </div>
-      </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             variant="faded"
             label="Blood Center"
@@ -95,8 +82,6 @@ const TrackTransfusionForm = () => {
               </AutocompleteItem>
             ))}
           </Autocomplete>
-        </div>
-        <div className="w-1/2">
           <input
             hidden
             name="blood_center_id"
@@ -104,8 +89,8 @@ const TrackTransfusionForm = () => {
           />
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <DatePicker
             variant="faded"
             name="transfusion_date"
@@ -115,10 +100,7 @@ const TrackTransfusionForm = () => {
             showMonthAndYearPickers
           />
         </div>
-        <div className="w-1/2"></div>
-      </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             type="text"
             variant="faded"
@@ -128,18 +110,12 @@ const TrackTransfusionForm = () => {
             name="hb_level"
           />
         </div>
-        <div className="w-1/2"></div>
       </div>
-      created by - user id submitted by
-      <div className="flex">
-        <div className="w-1/2">
-          <FormSubmitButton errorMessage={state} pendingText="Submitting">
-            Submit
-          </FormSubmitButton>
-        </div>
-        <div className="w-1/2"></div>
-
-      </div>  
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
+        <FormSubmitButton errorMessage={state} pendingText="Submitting">
+          Submit
+        </FormSubmitButton>
+      </div>
     </form>
   );
 };
