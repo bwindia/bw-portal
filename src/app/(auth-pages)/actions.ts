@@ -10,6 +10,7 @@ import {
   SIGN_UP_PATH,
   VERIFY_OTP_PATH,
 } from "@/utils/routes";
+import { Message } from "@/utils/types";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -41,8 +42,20 @@ export const signUpAction = async (formData: FormData) => {
   }
 };
 
-export const signInAction = async (formData: FormData) => {
+export const signInAction = async (
+  state: undefined | Message,
+  formData: FormData
+) => {
   const phoneFormdata = formData.get("phone") as string;
+  if (!phoneFormdata.trim()) {
+    return { error: "Phone number can not be empty" };
+  }
+  if (isNaN(parseInt(phoneFormdata, 10))) {
+    return { error: "Phone number can only contain numbers" };
+  }
+  if (phoneFormdata.length !== 10) {
+    return { error: "Invalid phone number" };
+  }
   const phone = "+91" + phoneFormdata;
   const supabase = createClient();
   const { error } = await supabase.auth.signInWithOtp({
@@ -50,13 +63,16 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", SIGN_IN_PATH, error.message);
+    return { error: error.message };
   }
 
   return encodedRedirect("message", VERIFY_OTP_PATH, phone);
 };
 
-export const verifyOtpAction = async (formData: FormData) => {
+export const verifyOtpAction = async (
+  state: undefined | Message,
+  formData: FormData
+) => {
   const token = formData.get("token") as string;
   const phone = formData.get("phone") as string;
   const supabase = createClient();
@@ -68,13 +84,7 @@ export const verifyOtpAction = async (formData: FormData) => {
   });
 
   if (error) {
-    const searchParamsUrl = headers().get("Referer");
-    return encodedRedirect(
-      "error",
-      VERIFY_OTP_PATH,
-      error.message,
-      searchParamsUrl
-    );
+    return { error: error.message };
   }
 
   return redirect(ADMIN_PAGE_ROUTE);
@@ -152,7 +162,6 @@ export const resetPasswordAction = async (formData: FormData) => {
 };
 
 export const signOutAction = async () => {
-  console.log("sign out");
   const supabase = createClient();
   await supabase.auth.signOut();
   return redirect(SIGN_IN_PATH);
