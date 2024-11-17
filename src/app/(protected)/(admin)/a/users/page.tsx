@@ -1,7 +1,7 @@
 import Button from "@/components/atoms/Button";
 import Table from "@/components/organisms/Table";
 import { createClient } from "@/lib/supabase/client";
-import { ADD_USER_PAGE_ROUTE } from "@/utils/routes";
+import { ADD_USER_PAGE_ROUTE, IMPORT_USERS_PAGE_ROUTE } from "@/utils/routes";
 import Link from "next/link";
 import React from "react";
 import { renderUserTableCell, USER_COLUMNS } from "./columns";
@@ -39,15 +39,27 @@ const UsersPage = async () => {
         columns={USER_COLUMNS}
         searchPlaceholder="Search by name or mobile"
         headerContent={
-          <Link href={ADD_USER_PAGE_ROUTE}>
-            <Button
-              startContent={
-                <span className="material-symbols-rounded">add</span>
-              }
-            >
-              Add User
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href={IMPORT_USERS_PAGE_ROUTE}>
+              <Button
+                startContent={
+                  <span className="material-symbols-rounded">upload</span>
+                }
+                color="default"
+              >
+                Import
+              </Button>
+            </Link>
+            <Link href={ADD_USER_PAGE_ROUTE}>
+              <Button
+                startContent={
+                  <span className="material-symbols-rounded">add</span>
+                }
+              >
+                Add User
+              </Button>
+            </Link>
+          </div>
         }
       />
     </div>
