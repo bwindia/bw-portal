@@ -41,7 +41,7 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
         <input type="hidden" name="user_id" value={userData?.user_id} />
       )}
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full sm:w-1/2">
           <Input
             type="text"
@@ -69,7 +69,7 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full sm:w-1/2">
           <Input
             type="tel"
@@ -99,7 +99,7 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full sm:w-1/2">
           <Select
             label="Gender"
@@ -136,7 +136,7 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full sm:w-1/2">
           <Input
             type="text"
@@ -185,7 +185,7 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
         <div className="w-full sm:w-1/2">
           <Select
             label="Active"

@@ -43,7 +43,7 @@ const Breadcrumbs = ({ path }: Props) => {
   const breadcrumbItems = getBreadcrumbItemsForPath(path);
 
   return (
-    <NextUiBreadcrumbs className="mb-6">
+    <NextUiBreadcrumbs className="h-16 mb-3 flex items-center">
       {breadcrumbItems.map((item, index) => (
         <BreadcrumbItem
           key={`breadcrumb-${item.label}-${index}`}

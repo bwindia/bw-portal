@@ -30,32 +30,25 @@ const TrackBloodDonationCampForm = () => {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchCampType = async () => {
-      const { data, error } = await supabase
-        .from("master_blood_donation_camp_type")
-        .select("camp_type_id, camp_type_name");
+    const fetchData = async () => {
+      const [{ data: campTypeData }, { data: bloodCentersData }] =
+        await Promise.all([
+          supabase
+            .from("master_blood_donation_camp_type")
+            .select("camp_type_id, camp_type_name"),
+          supabase.from("master_blood_center").select("blood_center_id, name"),
+        ]);
 
-      if (error) throw error;
-      console.log(data);
-      setCampTypeNames(data);
+      setCampTypeNames(campTypeData || []);
+      setBloodCenters(bloodCentersData || []);
     };
-    fetchCampType();
-    const fetchBloodCenters = async () => {
-      const { data, error } = await supabase
-        .from("master_blood_center")
-        .select("blood_center_id, name");
-
-      if (error) throw error;
-
-      setBloodCenters(data);
-    };
-    fetchBloodCenters();
+    fetchData();
   }, [supabase]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Place name"
@@ -65,8 +58,7 @@ const TrackBloodDonationCampForm = () => {
             isRequired
           />
         </div>
-
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Pincode"
@@ -77,8 +69,8 @@ const TrackBloodDonationCampForm = () => {
           />
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Point of contact name"
@@ -88,7 +80,7 @@ const TrackBloodDonationCampForm = () => {
             isRequired
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Point of contact number"
@@ -98,7 +90,7 @@ const TrackBloodDonationCampForm = () => {
             isRequired
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Email"
@@ -109,8 +101,8 @@ const TrackBloodDonationCampForm = () => {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Select
             variant="faded"
             label="Camp Type"
@@ -129,7 +121,7 @@ const TrackBloodDonationCampForm = () => {
             ))}
           </Select>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <DatePicker
             variant="faded"
             name="camp_date"
@@ -139,7 +131,7 @@ const TrackBloodDonationCampForm = () => {
             showMonthAndYearPickers
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Select
             variant="faded"
             label="Camp status"
@@ -157,8 +149,8 @@ const TrackBloodDonationCampForm = () => {
           </Select>
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             variant="faded"
             name="blood_center_id"
@@ -189,7 +181,7 @@ const TrackBloodDonationCampForm = () => {
             value={autoCompleteFields.blood_center_id}
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Expected donors"
@@ -198,7 +190,7 @@ const TrackBloodDonationCampForm = () => {
             name="expected_donors"
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <Input
             variant="faded"
             label="Actual donors"
@@ -208,9 +200,11 @@ const TrackBloodDonationCampForm = () => {
           />
         </div>
       </div>
-      <FormSubmitButton errorMessage={state} pendingText="Submitting">
-        Submit
-      </FormSubmitButton>
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
+        <FormSubmitButton errorMessage={state} pendingText="Submitting">
+          Submit
+        </FormSubmitButton>
+      </div>
     </form>
   );
 };

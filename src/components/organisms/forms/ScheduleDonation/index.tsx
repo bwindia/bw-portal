@@ -29,45 +29,32 @@ const ScheduleDonationForm = () => {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchUserNames = async () => {
-      const { data, error } = await supabase
-        .from("user_data")
-        .select("user_id, name");
-
-      if (error) throw error;
-      console.log(data);
-      setUserNames(data);
+    const fetchData = async () => {
+      const [
+        { data: userData },
+        { data: bridgeData },
+        { data: bloodCenterData },
+      ] = await Promise.all([
+        supabase.from("user_data").select("user_id, name"),
+        supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
+        supabase.from("master_blood_center").select("blood_center_id, name"),
+      ]);
+      setUserNames(userData || []);
+      setBridges(bridgeData || []);
+      setBloodCenters(bloodCenterData || []);
     };
-    fetchUserNames();
-    const fetchBridges = async () => {
-      const { data, error } = await supabase
-        .from("bridge_patient_info")
-        .select("bridge_id, bridge_name");
-
-      if (error) throw error;
-
-      setBridges(data);
-    };
-    fetchBridges();
-    const fetchBloodCenters = async () => {
-      const { data, error } = await supabase
-        .from("master_blood_center")
-        .select("blood_center_id, name");
-
-      if (error) throw error;
-
-      setBloodCenters(data);
-    };
-    fetchBloodCenters();
+    fetchData();
   }, [supabase]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             // name="user_id"
             label="Name"
+            variant="faded"
+            placeholder="Search by name"
             labelPlacement="outside"
             selectedKey={autoCompleteFields.user_id}
             onSelectionChange={(key) =>
@@ -85,15 +72,17 @@ const ScheduleDonationForm = () => {
             ))}
           </Autocomplete>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2 hidden sm:block">
           <input hidden name="user_id" value={autoCompleteFields.user_id} />
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Select
             label="Donation type"
             labelPlacement="outside"
+            variant="faded"
+            placeholder="Select donation type"
             name="donation_type_id"
             value={donationType}
             onChange={(e) => setDonationType(e.target.value)}
@@ -106,13 +95,15 @@ const ScheduleDonationForm = () => {
             ))}
           </Select>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           {donationType === "2" && (
             <>
               <Autocomplete
                 name="bridge_id"
                 label="Blood Bridge"
                 labelPlacement="outside"
+                variant="faded"
+                placeholder="Search by blood bridge"
                 selectedKey={autoCompleteFields.bridge_id}
                 onSelectionChange={(key) =>
                   setAutoCompleteFields((prev) => ({
@@ -140,12 +131,14 @@ const ScheduleDonationForm = () => {
           )}
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <Autocomplete
             name="blood_center_id"
             label="Blood Center"
             labelPlacement="outside"
+            variant="faded"
+            placeholder="Search by blood center"
             selectedKey={autoCompleteFields.blood_center_id}
             onSelectionChange={(key) =>
               setAutoCompleteFields((prev) => ({
@@ -165,7 +158,7 @@ const ScheduleDonationForm = () => {
             ))}
           </Autocomplete>
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2 hidden sm:block">
           <input
             hidden
             name="blood_center_id"
@@ -173,29 +166,34 @@ const ScheduleDonationForm = () => {
           />
         </div>
       </div>
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+        <div className="w-full sm:w-1/2">
           <DatePicker
             name="date_of_donation"
             label="Donation Date"
             labelPlacement="outside"
+            variant="faded"
             isRequired
             showMonthAndYearPickers
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full sm:w-1/2">
           <TimeInput
             name="time_of_donation"
             labelPlacement="outside"
             label="Donation Time"
+            variant="faded"
             isRequired
           />
         </div>
       </div>
-      Things to add: Created/Submitted by - user
-      <FormSubmitButton errorMessage={state} pendingText="Submitting">
-        Submit
-      </FormSubmitButton>
+      <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-2">
+        <div>
+          <FormSubmitButton errorMessage={state} pendingText="Submitting">
+            Submit
+          </FormSubmitButton>
+        </div>
+      </div>
     </form>
   );
 };

@@ -1,8 +1,12 @@
+import Breadcrumbs from "@/components/molecules/Breadcrumbs"
 import ScheduleDonationForm from "@/components/organisms/forms/ScheduleDonation"
 
 const ScheduleDonationPage = () => {
   return (
-    <ScheduleDonationForm/>
+    <>
+      <Breadcrumbs />
+      <ScheduleDonationForm />
+    </>
   )
 }
 

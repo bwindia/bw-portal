@@ -101,7 +101,7 @@ const ImportUsers = () => {
         {parsedData.length === 0 && (
           <>
             <div
-              className="flex flex-col justify-center items-center gap-2
+              className="flex flex-col justify-center items-center gap-2 text-center p-2
               h-[320px] max-h-[60vh] w-full border-dashed border-default-500 border-1 rounded-lg cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
