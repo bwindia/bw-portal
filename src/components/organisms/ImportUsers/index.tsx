@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import Papa from "papaparse";
 import {
   BLOOD_GROUP,
-  BLOOD_WARRIORS_ORGANIZATION_ID,
+  ORGANIZATION_ID,
   GENDER,
 } from "@/utils/constants";
 import FormMessage from "@/components/molecules/FormMessage";
@@ -57,7 +57,7 @@ const ImportUsers = () => {
               g.label.toLocaleLowerCase() ===
               item.gender.trim().toLocaleLowerCase()
           )?.value,
-          bw_id: BLOOD_WARRIORS_ORGANIZATION_ID,
+          bw_id: ORGANIZATION_ID,
           is_active: true,
         }));
 

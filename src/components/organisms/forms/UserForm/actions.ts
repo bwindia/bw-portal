@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getUserInfo } from "@/lib/supabase/user";
-import { BLOOD_WARRIORS_ORGANIZATION_ID } from "@/utils/constants";
+import { ORGANIZATION_ID } from "@/utils/constants";
 import { filterFormData } from "@/utils/functions";
 import { USERS_PAGE_ROUTE } from "@/utils/routes";
 import { Message } from "@/utils/types";
@@ -120,7 +120,7 @@ export const userFormAction = async (
           blood_group_id: formFields.blood_group_id,
           date_of_birth: formFields.date_of_birth || null,
           pincode: formFields.pincode,
-          org_id: BLOOD_WARRIORS_ORGANIZATION_ID,
+          org_id: ORGANIZATION_ID,
           is_active: true,
         })
         .select()

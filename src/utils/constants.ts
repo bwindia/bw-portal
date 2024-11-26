@@ -8,9 +8,9 @@ import {
 } from "./routes";
 import { INavItem, ISelectItem, ITableColumn, IUser } from "./types";
 
-export const BLOOD_WARRIORS = "Blood Warriors";
+export const ORGANIZATION_NAME = "Blood Warriors";
 
-export const BLOOD_WARRIORS_ORGANIZATION_ID = "O01";
+export const ORGANIZATION_ID = "O01";
 
 export const USERS_TABLE_COLUMNS: ITableColumn[] = [
   {
@@ -127,6 +127,10 @@ export const BLOOD_GROUP: ISelectItem[] = [
   {
     label: "O Negative",
     value: "8",
+  },
+  {
+    label: "Do Not Know",
+    value: "9",
   },
 ];
 
