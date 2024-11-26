@@ -20,8 +20,8 @@ export const NextSuccessDataResponse = (data: any) => {
 };
 
 export const NextSuccessResponse = (message: string) => {
-    return NextResponse.json({
-      status: "success",
-      message
-    });
-  };
+  return NextResponse.json({
+    status: "success",
+    message
+  });
+};
