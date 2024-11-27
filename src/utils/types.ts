@@ -8,7 +8,6 @@ export enum UserRole {
   BRIDGE_DONOR = "Bridge Donor",
   EMERGENCY_DONOR = "Emergency Donor",
   PATIENT = "Patient",
-  USER = "User",
   GUEST = "Guest",
 }
 

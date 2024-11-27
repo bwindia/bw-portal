@@ -1,6 +1,13 @@
 import { WHATSAPP_BASE_URL } from "@/lib/chatbot/config";
 import { WHATSAPP_TEMPLATES } from "@/lib/chatbot/templates";
-import { WhatsAppMessagePayload, AppointmentReminderParams, DirectMessageParams, TemplateMessageParams } from "@/utils/types/whatsapp";
+import { createClient } from "@/lib/supabase/client";
+import {
+  WhatsAppMessagePayload,
+  AppointmentReminderParams,
+  DirectMessageParams,
+  TemplateMessageParams,
+  MessageResponse,
+} from "@/utils/types/whatsapp";
 
 const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   const response = await fetch(`${WHATSAPP_BASE_URL}/messages`, {
@@ -19,7 +26,7 @@ const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   }
 
   return response.json();
-}
+};
 
 export const sendAppointmentReminder = async ({
   to,
@@ -68,9 +75,9 @@ export const sendAppointmentReminder = async ({
   };
 
   return sendWhatsAppMessage(payload);
-}
+};
 
-export const sendDirectMessage = async ({
+const sendDirectMessage = async ({
   to,
   message,
   previewUrl = false,
@@ -86,9 +93,9 @@ export const sendDirectMessage = async ({
   };
 
   return sendWhatsAppMessage(payload);
-}
+};
 
-export const sendTemplateMessage = async ({
+const sendTemplateMessage = async ({
   to,
   templateName,
   components,
@@ -106,4 +113,46 @@ export const sendTemplateMessage = async ({
   };
 
   return sendWhatsAppMessage(messagePayload);
-}
+};
+
+export const sendMessageToUser = async (response: MessageResponse) => {
+  if ("templateName" in response) {
+    return await sendTemplateMessage(response);
+  } else if ("message" in response) {
+    return await sendDirectMessage(response);
+  }
+  throw new Error("Invalid message type");
+};
+
+export const storeMessageToDatabase = async (
+  messageType: "text" | "audio",
+  message: string,
+  response: MessageResponse,
+  agent: string,
+  mobile: string
+) => {
+  // Check if response has templateName or message property
+  const supabase = createClient();
+  let responseMessage;
+  if ("templateName" in response) {
+    responseMessage = response.templateName;
+  } else if ("message" in response) {
+    responseMessage = response.message;
+  } else {
+    responseMessage = "error";
+  }
+
+  const { error } = await supabase.from("tracker_chatbot_message").insert({
+    mobile: mobile.substring(2),
+    message_type_id:
+      messageType === "text" ? 1 : messageType === "audio" ? 4 : 7,
+    message,
+    agent,
+    response: responseMessage,
+  });
+  if (error) {
+    throw new Error(
+      "Our server is currently experiencing issues, please try again later."
+    );
+  }
+};

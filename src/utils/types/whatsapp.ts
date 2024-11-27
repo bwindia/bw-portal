@@ -78,3 +78,15 @@ export interface WhatsAppMessage {
     url: string;
   };
 }
+
+export type MessageProcessor = (message: any) => Promise<string | null>;
+
+export type MessageResponse = DirectMessageParams | TemplateMessageParams;
+
+export interface MessageContext {
+  content: string;
+  from: string;
+  name: string;
+}
+
+export type AgentHandler = (context: MessageContext) => Promise<MessageResponse>;
