@@ -2,6 +2,7 @@ import { MessageAgent } from "@/utils/types/whatsapp";
 import { AgentHandler, MessageContext, MessageResponse } from "@/utils/types/whatsapp";
 import { greetUser } from "@/lib/chatbot/services/greet-user";
 import { handleFAQ } from "@/lib/ai/services/faq-handler";
+import { handleBloodBridgeAgent } from "../blood-bridge/handler";
 
 const agentHandlers: Record<MessageAgent, AgentHandler> = {
   [MessageAgent.GREETING]: async ({ from, name }) => 
@@ -12,10 +13,8 @@ const agentHandlers: Record<MessageAgent, AgentHandler> = {
     message: await handleFAQ(content),
   }),
 
-  [MessageAgent.BLOOD_BRIDGE]: async ({ from }) => ({
-    to: from,
-    message: "We're working on it. Please hold on.",
-  }),
+  [MessageAgent.BLOOD_BRIDGE]: async ({ content, from }) =>
+    await handleBloodBridgeAgent(content, from),
 
   [MessageAgent.BOUNCER]: async ({ from }) => ({
     to: from,

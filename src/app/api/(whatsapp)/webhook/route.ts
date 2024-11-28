@@ -6,13 +6,10 @@ import { handleWhatsAppMessage } from "@/lib/chatbot/controllers/user-message";
 let analyzerInitialized = false;
 
 async function ensureAnalyzerInitialized() {
-  console.log("Checking if analyzer is initialized");
   if (!analyzerInitialized) {
-    console.log("Initializing analyzer");
     await initializeAnalyzer(AI_CONFIG.OPENAI_API_KEY as string);
     analyzerInitialized = true;
   }
-  console.log("Analyzer is initialized");
 }
 
 export async function GET(request: Request) {

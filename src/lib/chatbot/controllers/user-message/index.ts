@@ -35,6 +35,7 @@ const handleAudioMessage = async (message: any): Promise<string> => {
 const messageProcessors: Record<string, MessageProcessor> = {
   text: async (message) => message.text.body,
   audio: handleAudioMessage,
+  button: async (message) => message.button.payload,
 };
 
 export const handleWhatsAppMessage = async (message: any, contact: any) => {
@@ -56,7 +57,10 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
       );
     }
 
-    agent = await analyzeAgentForMessage(messageContent);
+    agent =
+      messageType === "button"
+        ? MessageAgent.BLOOD_BRIDGE
+        : await analyzeAgentForMessage(messageContent);
     const response = await getResponseForAgent(agent, {
       content: messageContent,
       from,

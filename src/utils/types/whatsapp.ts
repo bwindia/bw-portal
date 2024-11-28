@@ -89,4 +89,11 @@ export interface MessageContext {
   name: string;
 }
 
+export interface TemplateContext {
+  from: string;
+  user: any; // Replace 'any' with your user type
+  message: string;
+  templateName: string;
+}
+
 export type AgentHandler = (context: MessageContext) => Promise<MessageResponse>;
