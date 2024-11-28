@@ -83,8 +83,10 @@ export type MessageProcessor = (message: any) => Promise<string | null>;
 
 export type MessageResponse = DirectMessageParams | TemplateMessageParams;
 
+export type MessageButtonContent = { text: string; payload: string };
+
 export interface MessageContext {
-  content: string;
+  content: string | MessageButtonContent;
   from: string;
   name: string;
 }
@@ -92,8 +94,10 @@ export interface MessageContext {
 export interface TemplateContext {
   from: string;
   user: any; // Replace 'any' with your user type
-  message: string;
+  message: MessageButtonContent;
   templateName: string;
 }
 
-export type AgentHandler = (context: MessageContext) => Promise<MessageResponse>;
+export type AgentHandler = (
+  context: MessageContext
+) => Promise<MessageResponse>;

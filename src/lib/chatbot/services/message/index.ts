@@ -115,19 +115,21 @@ const sendTemplateMessage = async ({
   return sendWhatsAppMessage(messagePayload);
 };
 
-export const sendMessageToUser = async (response: MessageResponse) => {
+export const sendMessageToUser = async (response: MessageResponse, messageType: "text" | "audio", message: string, agent: string) => {
   if ("templateName" in response) {
-    return await sendTemplateMessage(response);
+    await sendTemplateMessage(response);
   } else if ("message" in response) {
-    return await sendDirectMessage(response);
+    await sendDirectMessage(response);
+  } else {
+    throw new Error("Invalid message type");
   }
-  throw new Error("Invalid message type");
+  await storeMessageToDatabase(response, messageType, message, agent, response.to); 
 };
 
 export const storeMessageToDatabase = async (
+  response: MessageResponse,
   messageType: "text" | "audio",
   message: string,
-  response: MessageResponse,
   agent: string,
   mobile: string
 ) => {

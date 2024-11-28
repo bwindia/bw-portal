@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getUserByMobile } from "@/lib/supabase/user";
 import { UserRole } from "@/utils/types";
 import { getTemplateHandler } from "@/lib/chatbot/services/blood-bridge/templates";
-import { TemplateContext } from "@/utils/types/whatsapp";
+import { MessageButtonContent, TemplateContext } from "@/utils/types/whatsapp";
 
 const ROLE_PRIORITY: { [key in UserRole]: number } = {
   Volunteer: 1,
@@ -12,27 +12,32 @@ const ROLE_PRIORITY: { [key in UserRole]: number } = {
   Guest: 5,
 };
 
+const MANUAL_TEMPLATE_MAP: Record<string, string> = {
+  "Send Request to Donors": "send_request_to_donors",
+};
+
 const getDestinationTemplate = async (content: string, role: UserRole) => {
   const supabase = createClient();
-  const { data: template, error } = await supabase
+  const { data: template } = await supabase
     .from("mapping_chatbot_template")
     .select("destination_template")
     .eq("message_string", content)
     .eq("role", role)
     .eq("is_active", true)
     .single();
-  if (error) {
-    console.error("Error fetching template:", error);
-    throw new Error("We couldn't find a template for this message.");
-  }
   if (template) {
-    console.log("Template found:", template);
     return template.destination_template;
+  }
+  if (!template) {
+    return { destination_template: MANUAL_TEMPLATE_MAP[content] };
   }
   return null;
 };
 
-export const handleBloodBridgeAgent = async (message: string, from: string) => {
+export const handleBloodBridgeAgent = async (
+  message: MessageButtonContent,
+  from: string
+) => {
   const { data: user } = await getUserByMobile(from);
   if (!user) {
     throw new Error(
@@ -44,7 +49,10 @@ export const handleBloodBridgeAgent = async (message: string, from: string) => {
     (a: UserRole, b: UserRole) => ROLE_PRIORITY[a] - ROLE_PRIORITY[b]
   )[0];
 
-  const templateName = await getDestinationTemplate(message, highestPriorityRole);
+  const templateName = await getDestinationTemplate(
+    message.text,
+    highestPriorityRole
+  );
   if (!templateName) {
     throw new Error("We couldn't find a template for this message.");
   }

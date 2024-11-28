@@ -1,9 +1,6 @@
 import { analyzeAgentForMessage } from "@/lib/ai/services/agent-analyzer";
 import { MessageAgent } from "@/utils/types/whatsapp";
-import {
-  sendMessageToUser,
-  storeMessageToDatabase,
-} from "@/lib/chatbot/services/message";
+import { sendMessageToUser } from "@/lib/chatbot/services/message";
 import { convertAudioToText } from "@/lib/ai/services/speech-to-text";
 import { WHATSAPP_CONFIG, WHATSAPP_URL } from "@/lib/chatbot/config";
 import { MessageProcessor } from "@/utils/types/whatsapp";
@@ -35,7 +32,8 @@ const handleAudioMessage = async (message: any): Promise<string> => {
 const messageProcessors: Record<string, MessageProcessor> = {
   text: async (message) => message.text.body,
   audio: handleAudioMessage,
-  button: async (message) => message.button.payload,
+  button: async (message) => message.button,
+  interactive: async (message) => message.interactive.nfm_reply,
 };
 
 export const handleWhatsAppMessage = async (message: any, contact: any) => {
@@ -58,7 +56,7 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
     }
 
     agent =
-      messageType === "button"
+      messageType === "button" || messageType === "interactive"
         ? MessageAgent.BLOOD_BRIDGE
         : await analyzeAgentForMessage(messageContent);
     const response = await getResponseForAgent(agent, {
@@ -66,31 +64,22 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
       from,
       name,
     });
-
-    await Promise.all([
-      sendMessageToUser(response),
-      storeMessageToDatabase(
-        messageType,
-        messageContent,
-        response,
-        agent || "NA",
-        from
-      ),
-    ]);
+    await sendMessageToUser(
+      response,
+      messageType,
+      messageContent,
+      agent || "NA"
+    );
   } catch (error: any) {
     const response = {
       to: from,
       message: error.message as string,
     };
-    await Promise.all([
-      sendMessageToUser(response),
-      storeMessageToDatabase(
-        messageType,
-        messageContent as string,
-        response,
-        agent || "NA",
-        from
-      ),
-    ]);
+    await sendMessageToUser(
+      response,
+      messageType,
+      messageContent as string,
+      agent || "NA"
+    );
   }
 };
