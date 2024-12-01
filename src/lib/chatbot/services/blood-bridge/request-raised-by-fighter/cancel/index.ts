@@ -1,13 +1,13 @@
 import { MessageResponse, TemplateContext } from "@/utils/types/whatsapp";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
 import { updateScheduleRequest } from "@/lib/chatbot/db/blood-bridge/schedule-request";
-import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/patient";
+import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
 
-export class RequestRaisedByParentCancel extends BaseTemplate {
+export class RequestRaisedByFighterCancel extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
     const { scheduledRequestId } = JSON.parse(context.message.payload);
     await updateScheduleRequest(scheduledRequestId, 2);
-    const patientDetails = await getUserDetails(context.user.user_id);
+    const fighterDetails = await getUserDetails(context.user.user_id);
     return {
       to: context.from,
       templateName: context.templateName,
@@ -15,15 +15,15 @@ export class RequestRaisedByParentCancel extends BaseTemplate {
         {
           type: "body",
           parameters: [
-            { type: "text", text: patientDetails.bridge_name },
-            { type: "text", text: patientDetails.blood_group },
+            { type: "text", text: fighterDetails.bridge_name },
+            { type: "text", text: fighterDetails.blood_group },
             {
               type: "text",
-              text: patientDetails.last_bridge_donation_date,
+              text: fighterDetails.last_bridge_donation_date,
             },
             {
               type: "text",
-              text: patientDetails.expected_next_transfusion_date,
+              text: fighterDetails.expected_next_transfusion_date,
             },
           ],
         },

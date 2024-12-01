@@ -2,15 +2,15 @@ import { CheckBridgeStatus } from "@/lib/chatbot/services/blood-bridge/check-bri
 import { FaqMessage } from "@/lib/chatbot/services/blood-bridge/faq-message";
 import { BaseTemplate } from "./base-template";
 import { RaiseEmergencyRequest } from "../raise-emergency-request";
-import { RequestRaisedByParentSuccess } from "../request-raised-by-parent/success";
-import { RequestRaisedByParentCancel } from "../request-raised-by-parent/cancel";
+import { RequestRaisedByFighterSuccess } from "../request-raised-by-fighter/success";
+import { RequestRaisedByFighterCancel } from "../request-raised-by-fighter/cancel";
 
 const templateMap: Record<string, new () => BaseTemplate> = {
   bridge_status: CheckBridgeStatus,
   faq_message: FaqMessage,
   raise_emergency_request: RaiseEmergencyRequest,
-  request_raised_by_parent_success: RequestRaisedByParentSuccess,
-  greeting_patient: RequestRaisedByParentCancel,
+  request_raised_by_parent_success: RequestRaisedByFighterSuccess,
+  greeting_patient: RequestRaisedByFighterCancel,
 };
 
 export const getTemplateHandler = (templateName: string): BaseTemplate => {

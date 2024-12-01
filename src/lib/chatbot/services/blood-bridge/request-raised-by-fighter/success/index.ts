@@ -1,14 +1,14 @@
 import { MessageResponse, TemplateContext } from "@/utils/types/whatsapp";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
-import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/patient";
-import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/patient";
+import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/fighter";
+import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { sendMessageToUser } from "../../../message";
 
-export class RequestRaisedByParentSuccess extends BaseTemplate {
+export class RequestRaisedByFighterSuccess extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
-    const patientDetails = await getUserDetails(context.user.user_id);
+    const fighterDetails = await getUserDetails(context.user.user_id);
     const bridgeVolunteers = await getBridgeVolunteers(
-      patientDetails.bridge_id
+      fighterDetails.bridge_id
     );
     const volunteerTemplate = (volunteer: {
       phone_number: string;
@@ -26,15 +26,15 @@ export class RequestRaisedByParentSuccess extends BaseTemplate {
             },
             {
               type: "text",
-              text: patientDetails.bridge_name,
+              text: fighterDetails.bridge_name,
             },
             {
               type: "text",
-              text: patientDetails.blood_group,
+              text: fighterDetails.blood_group,
             },
             {
               type: "text",
-              text: patientDetails.expected_next_transfusion_date,
+              text: fighterDetails.expected_next_transfusion_date,
             },
           ],
         },
@@ -45,7 +45,7 @@ export class RequestRaisedByParentSuccess extends BaseTemplate {
         //   parameters: [
         //     {
         //       type: "text",
-        //       text: `tel:+91${patientDetails.phone_number}`,
+        //       text: `tel:+91${fighterDetails.phone_number}`,
         //     },
         //   ],
         // },

@@ -33,7 +33,7 @@ export const greetUser = async (
             },
           ],
         };
-      } else if (user.roles.includes(UserRole.PATIENT)) {
+      } else if (user.roles.includes(UserRole.FIGHTER)) {
         payload = {
           to,
           templateName: "greeting_patient",

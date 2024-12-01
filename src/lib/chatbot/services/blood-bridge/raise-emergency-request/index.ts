@@ -1,14 +1,14 @@
 import { MessageResponse, TemplateContext } from "@/utils/types/whatsapp";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
-import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/patient";
-import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/patient";
-import { schedulePatientRequest } from "@/lib/chatbot/db/blood-bridge/schedule-request";
+import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
+import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/fighter";
+import { scheduleFighterRequest } from "@/lib/chatbot/db/blood-bridge/schedule-request";
 
 export class RaiseEmergencyRequest extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
-    const patientDetails = await getUserDetails(context.user.user_id);
-    const bridgeVolunteers = await getBridgeVolunteers(patientDetails.bridge_id);
-    const scheduledRequest = await schedulePatientRequest(patientDetails);
+    const fighterDetails = await getUserDetails(context.user.user_id);
+    const bridgeVolunteers = await getBridgeVolunteers(fighterDetails.bridge_id);
+    const scheduledRequest = await scheduleFighterRequest(fighterDetails);
     
     return {
       to: context.from,

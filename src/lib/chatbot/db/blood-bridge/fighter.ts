@@ -14,17 +14,17 @@ export const getUserDetails = async (user_id: string) => {
   return data;
 };
 
-export const getBridgePatient = async (bridge_id: string) => {
+export const getBridgeFighter = async (bridge_id: string) => {
   const supabase = createClient();
   const { data } = await supabase
     .from("view_user_data_rean")
     .select("*")
     .eq("bridge_id", bridge_id)
-    .eq("role", UserRole.PATIENT)
+    .eq("role", UserRole.FIGHTER)
     .single();
   if (!data) {
     throw new Error(
-      "Patient has not been assigned to this bridge yet. Please contact support."
+      "Fighter has not been assigned to this bridge yet. Please contact support."
     );
   }
   return data;

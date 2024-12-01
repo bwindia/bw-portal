@@ -1,21 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { BLOOD_GROUP } from "@/utils/constants";
 
-export const schedulePatientRequest = async (patientDetails: any) => {
+export const scheduleFighterRequest = async (fighterDetails: any) => {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("tracker_emergency_request")
     .insert({
-      patient_name: patientDetails.bridge_name,
-      requirement_date: patientDetails.expected_next_transfusion_date,
-      no_of_units: patientDetails.quantity_required,
+      patient_name: fighterDetails.bridge_name,
+      requirement_date: fighterDetails.expected_next_transfusion_date,
+      no_of_units: fighterDetails.quantity_required,
       blood_group_id: BLOOD_GROUP.find(
-        (item) => item.label === patientDetails.blood_group
+        (item) => item.label === fighterDetails.blood_group
       )?.value,
       request_type: 2,
       status: 6,
-      requested_by_user_id: patientDetails.user_id,
-      bridge_id: patientDetails.bridge_id,
+      requested_by_user_id: fighterDetails.user_id,
+      bridge_id: fighterDetails.bridge_id,
     })
     .select("*")
     .single();

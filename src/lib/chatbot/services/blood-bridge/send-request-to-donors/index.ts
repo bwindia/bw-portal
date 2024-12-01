@@ -4,16 +4,16 @@ import { TemplateContext } from "@/utils/types/whatsapp";
 import { BaseTemplate } from "../templates/base-template";
 import {
   getBridgeDonors,
-  getBridgePatient,
+  getBridgeFighter,
   getBridgeVolunteers,
-} from "@/lib/chatbot/db/blood-bridge/patient";
-import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/patient";
+} from "@/lib/chatbot/db/blood-bridge/fighter";
+import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { sendMessageToUser } from "@/lib/chatbot/services/message";
 
 export class SendRequestToDonors extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
     const userDetails = await getUserDetails(context.user.user_id);
-    const bridgePatient = await getBridgePatient(userDetails.bridge_id);
+    const bridgeFighter = await getBridgeFighter(userDetails.bridge_id);
     const bridgeDonors = await getBridgeDonors(userDetails.bridge_id);
     const bridgeVolunteers = await getBridgeVolunteers(userDetails.bridge_id);
 
@@ -30,15 +30,15 @@ export class SendRequestToDonors extends BaseTemplate {
             },
             {
               type: "text",
-              text: bridgePatient.bridge_name,
+              text: bridgeFighter.bridge_name,
             },
             {
               type: "text",
-              text: bridgePatient.bridge_group,
+              text: bridgeFighter.bridge_group,
             },
             {
               type: "text",
-              text: bridgePatient.expected_next_transfusion_date,
+              text: bridgeFighter.expected_next_transfusion_date,
             },
           ],
         },
@@ -83,7 +83,7 @@ export class SendRequestToDonors extends BaseTemplate {
       name: string;
     }) => ({
       to: `91${volunteer.phone_number}`,
-      message: `A request has been raised by ${userDetails.name} for ${bridgePatient.bridge_name}`,
+      message: `A request has been raised by ${userDetails.name} for ${bridgeFighter.bridge_name}`,
     });
     bridgeVolunteers
       .filter((volunteer) => volunteer.id !== userDetails.user_id)
