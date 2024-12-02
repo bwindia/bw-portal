@@ -6,6 +6,7 @@ export const RESET_PASSWORD_PATH = "/reset-password";
 
 // Public routes
 export const HOME_PAGE_ROUTE = "/home";
+export const PUBLIC_SCHEDULE_DONATION_PAGE_ROUTE = "/forms/schedule-donation";
 
 // Protected routes
 

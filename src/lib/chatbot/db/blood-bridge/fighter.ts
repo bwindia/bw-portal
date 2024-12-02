@@ -59,3 +59,20 @@ export const getBridgeDonors = async (bridge_id: string) => {
   }
   return data;
 };
+
+export const getOneTimeDonorsForBridge = async (bridge_blood_group: string) => {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("view_user_data_rean")
+    .select("*")
+    .eq("blood_group", bridge_blood_group)
+    .eq("role", UserRole.EMERGENCY_DONOR)
+    .eq("status", "active")
+    .eq("eligibility_status", "eligible")
+    .limit(5);
+
+  if (!data) {
+    throw new Error("No one time donors found for this bridge. Please contact support.");
+  }
+  return data;
+};

@@ -13,7 +13,8 @@ const ROLE_PRIORITY: { [key in UserRole]: number } = {
 };
 
 const MANUAL_TEMPLATE_MAP: Record<string, string> = {
-  "Send Request to Donors": "send_request_to_donors",
+  "Send Notification": "send_notification_to_donors",
+  "Schedule a donation": "schedule_donation",
 };
 
 const getDestinationTemplate = async (content: string, role: UserRole) => {

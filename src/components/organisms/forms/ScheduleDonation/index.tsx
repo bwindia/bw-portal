@@ -15,7 +15,11 @@ import { DONATION_TYPE } from "@/utils/constants";
 import { createClient } from "@/lib/supabase/client";
 import FormSubmitButton from "@/components/molecules/FormSubmitButton";
 
-const ScheduleDonationForm = () => {
+interface Props {
+  scheduleRequestId?: string;
+}
+
+const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
   const [donationType, setDonationType] = useState<string>();
   const [state, formAction] = useFormState(scheduleDonationAction, undefined);
   const [autoCompleteFields, setAutoCompleteFields] = useState({
@@ -44,7 +48,23 @@ const ScheduleDonationForm = () => {
       setBloodCenters(bloodCenterData || []);
     };
     fetchData();
-  }, [supabase]);
+    if (scheduleRequestId) {
+      const fetchScheduleData = async () => {
+        const { data, error } = await supabase
+          .from("tracker_emergency_request")
+          .select("request_type, bridge_id")
+          .eq("id", scheduleRequestId)
+          .single();
+        console.log("data", data, error);
+        setDonationType(data?.request_type?.toString());
+        setAutoCompleteFields((prev) => ({
+          ...prev,
+          bridge_id: data?.bridge_id,
+        }));
+      };
+      fetchScheduleData();
+    }
+  }, [supabase, scheduleRequestId]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -73,7 +93,20 @@ const ScheduleDonationForm = () => {
           </Autocomplete>
         </div>
         <div className="w-full sm:w-1/2 hidden sm:block">
-          <input hidden name="user_id" value={autoCompleteFields.user_id} />
+          <input
+            hidden
+            name="user_id"
+            value={autoCompleteFields.user_id}
+            readOnly
+          />
+          {scheduleRequestId && (
+            <input
+              hidden
+              name="schedule_request_id"
+              value={scheduleRequestId}
+              readOnly
+            />
+          )}
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
@@ -84,8 +117,11 @@ const ScheduleDonationForm = () => {
             variant="faded"
             placeholder="Select donation type"
             name="donation_type_id"
-            value={donationType}
-            onChange={(e) => setDonationType(e.target.value)}
+            selectedKeys={donationType ? [donationType] : []}
+            onSelectionChange={(keys) =>
+              setDonationType(Array.from(keys)[0]?.toString())
+            }
+            isDisabled={!!scheduleRequestId}
             isRequired
           >
             {DONATION_TYPE.map((type) => (
@@ -111,6 +147,9 @@ const ScheduleDonationForm = () => {
                     bridge_id: key as string,
                   }))
                 }
+                isDisabled={
+                  !!scheduleRequestId && !!autoCompleteFields.bridge_id
+                }
                 isRequired
               >
                 {bridges.map((bridge) => (
@@ -126,6 +165,7 @@ const ScheduleDonationForm = () => {
                 hidden
                 name="bridge_id"
                 value={autoCompleteFields.bridge_id}
+                readOnly
               />
             </>
           )}
@@ -163,6 +203,7 @@ const ScheduleDonationForm = () => {
             hidden
             name="blood_center_id"
             value={autoCompleteFields.blood_center_id}
+            readOnly
           />
         </div>
       </div>

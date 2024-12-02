@@ -2,14 +2,18 @@ import { MessageResponse, TemplateContext } from "@/utils/types/whatsapp";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
 import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
-import { sendMessageToUser } from "../../../message";
+import { sendMessageToUser } from "../../../../message";
+import { scheduleFighterRequest } from "@/lib/chatbot/db/blood-bridge/schedule-request";
 
 export class RequestRaisedByFighterSuccess extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
     const fighterDetails = await getUserDetails(context.user.user_id);
+    const scheduledRequest = await scheduleFighterRequest(fighterDetails);
+    const messagePayload = JSON.stringify({ scheduledRequestId: scheduledRequest.id });
     const bridgeVolunteers = await getBridgeVolunteers(
       fighterDetails.bridge_id
     );
+
     const volunteerTemplate = (volunteer: {
       phone_number: string;
       name: string;
@@ -56,7 +60,7 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
           parameters: [
             {
               type: "payload",
-              payload: context.message.payload,
+              payload: messagePayload,
             },
           ],
         },
@@ -67,7 +71,7 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
           parameters: [
             {
               type: "payload",
-              payload: context.message.payload,
+              payload: messagePayload,
             },
           ],
         },
