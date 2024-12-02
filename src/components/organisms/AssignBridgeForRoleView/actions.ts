@@ -10,12 +10,16 @@ interface AssignUsersProps {
   userIds: number[];
 }
 
-export async function assignUsersToBridge({ bridgeId, roleId, userIds }: AssignUsersProps) {
+export const assignUsersToBridge = async ({
+  bridgeId,
+  roleId,
+  userIds,
+}: AssignUsersProps) => {
   const supabase = createClient();
 
   const { data: user } = await getUserInfo();
 
-  const insertRows = userIds.map(userId => ({
+  const insertRows = userIds.map((userId) => ({
     bridge_id: bridgeId,
     user_id: userId,
     role_id: roleId,
@@ -31,4 +35,4 @@ export async function assignUsersToBridge({ bridgeId, roleId, userIds }: AssignU
   }
 
   revalidatePath(`/a/bridges/${bridgeId}`);
-}
+};

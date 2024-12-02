@@ -1,11 +1,6 @@
-
-// Add this import at the top with other imports
-// import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-// import { Document } from 'langchain/document';
-// import { FaissStore } from 'langchain/vectorstores/faiss';
-import { OpenAIEmbeddings } from '@langchain/openai';
-import { Document } from '@langchain/core/documents';
-import { FaissStore } from '@langchain/community/vectorstores/faiss';
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { Document } from "@langchain/core/documents";
+import { FaissStore } from "@langchain/community/vectorstores/faiss";
 import { TRAINING_DATA } from "@/lib/ai/config/data";
 import { MessageAgent } from "@/utils/types/whatsapp";
 
@@ -15,22 +10,23 @@ let instance: {
   vectorstore: FaissStore;
 } | null = null;
 
-export async function initializeAnalyzer(openAIApiKey: string) {
+export const initializeAnalyzer = async (openAIApiKey: string) => {
   if (!instance) {
-    const embeddings = new OpenAIEmbeddings({ openAIApiKey,
-      modelName: "text-embedding-3-small"
-     });
+    const embeddings = new OpenAIEmbeddings({
+      openAIApiKey,
+      modelName: "text-embedding-3-small",
+    });
     const vectorstore = await initializeVectorstore(embeddings);
     instance = { embeddings, vectorstore };
   }
   return instance;
-}
+};
 
-async function initializeVectorstore(
+const initializeVectorstore = async (
   embeddings: OpenAIEmbeddings
-): Promise<FaissStore> {
+): Promise<FaissStore> => {
   const trainingData = TRAINING_DATA;
-  
+
   const documents = trainingData.map(
     (data) =>
       new Document({ pageContent: data.text, metadata: { agent: data.agent } })
@@ -38,11 +34,11 @@ async function initializeVectorstore(
 
   const vectorstore = await FaissStore.fromDocuments(documents, embeddings);
   return vectorstore;
-}
+};
 
-export async function analyzeAgentForMessage(
+export const analyzeAgentForMessage = async (
   message: string
-): Promise<MessageAgent> {
+): Promise<MessageAgent> => {
   if (!instance) {
     throw new Error("Analyzer not initialized");
   }
@@ -62,7 +58,7 @@ export async function analyzeAgentForMessage(
     console.error("Error analyzing message:", error);
     return MessageAgent.BOUNCER;
   }
-}
+};
 // import { MessageAgent } from "@/utils/types/whatsapp";
 
 // export const analyzeAgentForMessage = async (

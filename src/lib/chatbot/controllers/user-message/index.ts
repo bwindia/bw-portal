@@ -75,6 +75,9 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
       to: from,
       message: error.message as string,
     };
+    if (!(error instanceof Error)) {
+      response.message = "Our systems are currently busy, please try again later.";
+    }
     await sendMessageToUser(
       response,
       messageType,

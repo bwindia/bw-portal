@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/atoms/Button";
 
-export default function Error({
+export const Error = ({
   error,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}) => {
   const router = useRouter();
   useEffect(() => {
     // Log the error to an error reporting service
@@ -36,4 +36,6 @@ export default function Error({
       </Button>
     </div>
   );
-}
+};
+
+export default Error;

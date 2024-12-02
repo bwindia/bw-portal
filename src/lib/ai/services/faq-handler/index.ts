@@ -10,7 +10,7 @@ Provide guidance on emotional, financial, and medical support for Thalassemia pa
 In cases of unrelated questions, politely redirect users by emphasizing your expertise in Thalassemia and blood donation. 
 Your responses should always be accurate, encouraging, and aligned with verified information, creating a trustworthy and impactful interaction.`;
 
-export async function handleFAQ(question: string): Promise<string> {
+export const handleFAQ = async (question: string): Promise<string> => {
   const openaiApiKey = AI_CONFIG.OPENAI_API_KEY;
   if (!openaiApiKey) {
     throw new Error("OpenAI API key is not configured");

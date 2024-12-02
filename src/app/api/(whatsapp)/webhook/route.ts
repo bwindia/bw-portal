@@ -5,14 +5,14 @@ import { handleWhatsAppMessage } from "@/lib/chatbot/controllers/user-message";
 
 let analyzerInitialized = false;
 
-async function ensureAnalyzerInitialized() {
+const ensureAnalyzerInitialized = async () => {
   if (!analyzerInitialized) {
     await initializeAnalyzer(AI_CONFIG.OPENAI_API_KEY as string);
     analyzerInitialized = true;
   }
 }
 
-export async function GET(request: Request) {
+export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
 
   const mode = searchParams.get("hub.mode");
@@ -25,14 +25,14 @@ export async function GET(request: Request) {
   } else {
     return new Response("Forbidden", { status: 403 });
   }
-}
+};
 
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   try {
     await ensureAnalyzerInitialized();
-    
+
     const body = await request.json();
-    
+
     if (body.object && body.entry?.[0].changes[0].value.messages) {
       console.log("Webhook Received:", JSON.stringify(body, null, 2));
       const message = body.entry[0].changes[0].value.messages[0];
@@ -53,4 +53,4 @@ export async function POST(request: Request) {
     console.error("Error processing webhook:", error);
     return new Response("Internal Server Error", { status: 500 });
   }
-}
+};

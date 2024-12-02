@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 const secret = new TextEncoder().encode(process.env.FORM_SECRET!);
 
-export async function generateScheduleFormToken(scheduleRequestId: string) {
+export const generateScheduleFormToken = async (scheduleRequestId: string) => {
   const token = await new SignJWT({ scheduleRequestId })
     .setProtectedHeader({ alg: "HS256" })
     .setJti(nanoid())
@@ -16,7 +16,7 @@ export async function generateScheduleFormToken(scheduleRequestId: string) {
   return token;
 }
 
-export async function verifyFormToken(token: string) {
+export const verifyFormToken = async (token: string) => {
   try {
     const verified = await jwtVerify(token, secret);
     return verified.payload;
