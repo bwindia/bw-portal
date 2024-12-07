@@ -91,7 +91,7 @@ const VerifyOtpPage = ({ searchParams }: { searchParams: Message }) => {
                 <input
                   hidden
                   name="phone"
-                  value={searchParams.message.substring(3)}
+                  value={searchParams.message.substring(1)}
                 />
                 <input
                   value="Resend Otp"

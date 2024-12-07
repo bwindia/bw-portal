@@ -31,7 +31,7 @@ export class BridgeDonationRequestAcceptEligible extends BaseTemplate {
       phone_number: string;
       name: string;
     }) => ({
-      to: `91${volunteer.phone_number}`,
+      to: volunteer.phone_number,
       templateName: "notification_donation_bridge_request_accept_volunteer",
       components: [
         {

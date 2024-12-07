@@ -121,7 +121,7 @@ export const greetUser = async (
     const { error } = await supabase
       .from("user_data")
       .insert({
-        mobile: to.substring(2),
+        mobile: to,
         name,
         pincode: "500028",
         source: "WhatsApp Chatbot",

@@ -37,7 +37,7 @@ const SignIn = () => {
               startContent={
                 <div className="pointer-events-none flex gap-2 items-center text-default-400">
                   {/* <span className="material-symbols-">Phone:</span> */}
-                  <span>+91</span>
+                  <span>+</span>
                 </div>
               }
               required

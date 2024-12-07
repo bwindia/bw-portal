@@ -145,7 +145,7 @@ export const storeMessageToDatabase = async (
   }
 
   const { error } = await supabase.from("tracker_chatbot_message").insert({
-    mobile: mobile.substring(2),
+    mobile: mobile,
     message_type_id:
       messageType === "text" ? 1 : messageType === "audio" ? 4 : 7,
     message,

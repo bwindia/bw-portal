@@ -56,7 +56,7 @@ export const signInAction = async (
   if (phoneFormdata.length !== 10) {
     return { error: "Invalid phone number" };
   }
-  const phone = "+91" + phoneFormdata;
+  const phone = "+" + phoneFormdata;
   const supabase = createClient();
   const { error } = await supabase.auth.signInWithOtp({
     phone,

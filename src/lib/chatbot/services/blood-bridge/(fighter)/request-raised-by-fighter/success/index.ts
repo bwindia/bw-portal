@@ -18,7 +18,7 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
       phone_number: string;
       name: string;
     }) => ({
-      to: `91${volunteer.phone_number}`,
+      to: volunteer.phone_number,
       templateName: "request_raised_by_parent",
       components: [
         {

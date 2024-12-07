@@ -18,7 +18,7 @@ export const getUserInfo = async () => {
       roles:mapping_user_role!fk_user_id(...master_user_role(role))`
     )
     .eq("mapping_user_role.role_status", true)
-    .eq("mobile", user.data.user?.phone?.substring(2))
+    .eq("mobile", user.data.user?.phone)
     .single();
 
   if (data?.roles) {
@@ -33,7 +33,7 @@ export const getUserByMobile = async (mobile: string) => {
     .from("user_data")
     .select("*, roles:mapping_user_role!fk_user_id(...master_user_role(role))")
     .eq("mapping_user_role.role_status", true)
-    .eq("mobile", mobile.substring(2))
+    .eq("mobile", mobile)
     .single();
   if (data?.roles) {
     data.roles = data.roles.map((role: any) => role.role);
@@ -46,7 +46,7 @@ export const getUserDetailsByMobile = async (mobile: string) => {
   const { data, error } = await supabase
     .from("view_user_data_rean")
     .select("*")
-    .eq("phone_number", mobile.substring(2))
+    .eq("phone_number", mobile)
     .limit(1);
   return { data, error };
 };

@@ -23,7 +23,7 @@ export class SendNotificationToDonors extends BaseTemplate {
       phone_number: string;
       name: string;
     }) => ({
-      to: `91${volunteer.phone_number}`,
+      to: volunteer.phone_number,
       message: `A request has been raised by ${userDetails.name} for ${bridgeFighter.bridge_name}`,
     });
     await Promise.all(
@@ -54,7 +54,7 @@ const notifyDonors = async (
     (donor) => donor.status === "eligible"
   );
   const donorTemplate = (donor: { phone_number: string; name: string }) => ({
-    to: `91${donor.phone_number}`,
+    to: donor.phone_number,
     templateName: "notification_donation_bridge_request",
     components: [
       {
