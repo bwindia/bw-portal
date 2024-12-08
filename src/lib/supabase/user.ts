@@ -20,8 +20,10 @@ export const getUserInfo = async () => {
     .eq("mapping_user_role.role_status", true)
     .eq("mobile", user.data.user?.phone)
     .single();
-
-  if (data?.roles) {
+  if (error) {
+    return { data: null, error };
+  }
+  if (data && data?.roles) {
     data.roles = data.roles.map((role) => role.role);
   }
   return { data, error };

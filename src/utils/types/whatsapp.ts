@@ -49,6 +49,10 @@ export type TemplateMessageParams = {
       type: string;
       text?: string;
       payload?: string;
+      document?: {
+        link: string;
+        filename: string;
+      };
     }>;
   }>;
 };

@@ -27,7 +27,7 @@ const templateMap: Record<string, new () => BaseTemplate> = {
   greeting_patient: RequestRaisedByFighterCancel,
 
   // volunteer templates
-  donor_list_bridge: ListBridgeDonors,
+  donors_list_bridge: ListBridgeDonors,
   notification_donation_bridge_request_confirmed: SendNotificationToDonors,
   send_notification_to_donors: SendNotificationToDonors,
   cancelled_request_bridge_volunteer: CancelBridgeRequest,

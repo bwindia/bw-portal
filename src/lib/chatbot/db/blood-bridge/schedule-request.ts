@@ -19,12 +19,21 @@ export const scheduleFighterRequest = async (fighterDetails: any) => {
     })
     .select("*")
     .single();
-  console.log("Emergency Request", data, error);
   if (error) {
     throw new Error(
       "We are unable to raise your request at this time, please try again later."
     );
   }
+  return data;
+};
+
+export const getScheduledRequestDetails = async (scheduledRequestId: string) => {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("tracker_emergency_request")
+    .select("*")
+    .eq("id", scheduledRequestId)
+    .single();
   return data;
 };
 
@@ -36,7 +45,9 @@ export const updateScheduleRequest = async (
   const { data, error } = await supabase
     .from("tracker_emergency_request")
     .update({ status })
-    .eq("id", scheduledRequestId);
+    .eq("id", scheduledRequestId)
+    .select("*")
+    .single();
   if (error) {
     throw new Error(
       "We failed to cancel your request, please contact support."

@@ -7,11 +7,10 @@ export const getUserDetails = async (user_id: string) => {
     .from("view_user_data_rean")
     .select("*")
     .eq("user_id", user_id)
-    .single();
   if (!data) {
     throw new Error("We couldn't fetch your data. Please contact support.");
   }
-  return data;
+  return data[0];
 };
 
 export const getBridgeFighter = async (bridge_id: string) => {
@@ -48,7 +47,7 @@ export const getBridgeVolunteers = async (bridge_id: string) => {
 export const getBridgeDonors = async (bridge_id: string) => {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("view_bridge_data_rean")
+    .from("view_user_data_rean")
     .select("*")
     .eq("bridge_id", bridge_id)
     .eq("role", UserRole.BRIDGE_DONOR);

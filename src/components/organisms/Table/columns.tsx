@@ -28,9 +28,7 @@ export const columns = [
 ];
 
 export const renderCell = (row: object, columnKey: React.Key) => {
-  console.log("row", row )
   const cellValue = row[columnKey as keyof object];
-  console.log("cell", cellValue)
 
   switch (columnKey) {
     case "actions":

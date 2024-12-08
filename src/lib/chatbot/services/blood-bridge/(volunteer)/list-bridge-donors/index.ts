@@ -2,15 +2,25 @@ import {
   getBridgeDonors,
   getUserDetails,
 } from "@/lib/chatbot/db/blood-bridge/fighter";
+import { getScheduledRequestDetails } from "@/lib/chatbot/db/blood-bridge/schedule-request";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
 import { MessageResponse, TemplateContext } from "@/utils/types/whatsapp";
 
 export class ListBridgeDonors extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
     const userDetails = await getUserDetails(context.user.user_id);
-    const bridgeDonors = await getBridgeDonors(userDetails.bridge_id);
+    const { scheduledRequestId } = JSON.parse(context.message.payload);
+    const scheduledRequestDetails = await getScheduledRequestDetails(
+      scheduledRequestId
+    );
+    const bridgeDonors = await getBridgeDonors(
+      scheduledRequestDetails.bridge_id
+    );
+    const eligibleDonors = bridgeDonors.filter(
+      (donor) => donor.eligibility_status === "eligible"
+    );
 
-    if (bridgeDonors.length === 0) {
+    if (eligibleDonors.length === 0) {
       return {
         to: context.from,
         templateName: "no_eligible_donors_bridge",
@@ -39,10 +49,9 @@ export class ListBridgeDonors extends BaseTemplate {
       };
     }
 
-    const eligibleDonorsList = bridgeDonors
-      .filter((donor) => donor.status === "eligible")
+    const eligibleDonorsList = eligibleDonors
       .map((donor, index) => `${index + 1}. ${donor.name}`)
-      .join("\n");
+      .join(", ");
 
     return {
       to: context.from,

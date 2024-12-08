@@ -12,10 +12,11 @@ const AdminLayout = async ({
   children: React.ReactNode;
 }>) => {
   const { data: user, error } = await getUserInfo();
+  if (error) {
+    redirect(SIGN_IN_PATH);
+  }
   const getUserDetails = (user: IUser | null): IUser => {
-    if (error) {
-      redirect(SIGN_IN_PATH);
-    } else if (user) {
+    if (user) {
       const profile: IUser = {
         name: user.name ?? "",
         email: user.email ?? user.mobile ?? "",

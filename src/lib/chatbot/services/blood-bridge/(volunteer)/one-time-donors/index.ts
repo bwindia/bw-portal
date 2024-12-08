@@ -3,20 +3,24 @@ import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base
 import {
   getBridgeFighter,
   getOneTimeDonorsForBridge,
-  getUserDetails,
 } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { generateScheduleFormToken } from "@/lib/auth/form-auth";
 import { PUBLIC_SCHEDULE_DONATION_PAGE_ROUTE } from "@/utils/routes";
+import { getScheduledRequestDetails } from "@/lib/chatbot/db/blood-bridge/schedule-request";
 
 export class OneTimeDonors extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
-    const userDetails = await getUserDetails(context.user.user_id);
-    const bridgeFighter = await getBridgeFighter(userDetails.bridge_id);
+    const { scheduledRequestId } = JSON.parse(context.message.payload);
+    const scheduledRequestDetails = await getScheduledRequestDetails(
+      scheduledRequestId
+    );
+    const bridgeFighter = await getBridgeFighter(
+      scheduledRequestDetails.bridge_id
+    );
     const oneTimeDonors = await getOneTimeDonorsForBridge(
       bridgeFighter.blood_group
     );
 
-    const { scheduledRequestId } = JSON.parse(context.message.payload);
     const templateText = oneTimeDonors
       .map((donor) => `${donor.name} - ${donor.phone_number}`)
       .join("\n");
@@ -28,7 +32,7 @@ export class OneTimeDonors extends BaseTemplate {
       components: [
         {
           type: "body",
-          parameters: [{ type: "text", text: templateText }],
+          parameters: [{ type: "text", text: templateText || "No donors found" }],
         },
         {
           type: "button",
@@ -48,7 +52,7 @@ export class OneTimeDonors extends BaseTemplate {
           parameters: [
             {
               type: "text",
-              text: `${process.env.NEXT_PUBLIC_APP_URL}${PUBLIC_SCHEDULE_DONATION_PAGE_ROUTE}?token=${formToken}`,
+              text: `${PUBLIC_SCHEDULE_DONATION_PAGE_ROUTE}?token=${formToken}`,
             },
           ],
         },
