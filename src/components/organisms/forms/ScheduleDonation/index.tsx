@@ -27,7 +27,7 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
     bridge_id: "",
     blood_center_id: "",
   });
-  const [userNames, setUserNames] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [bridges, setBridges] = useState<any[]>([]);
   const [bloodCenters, setBloodCenters] = useState<any[]>([]);
   const supabase = createClient();
@@ -39,11 +39,11 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
         { data: bridgeData },
         { data: bloodCenterData },
       ] = await Promise.all([
-        supabase.from("user_data").select("user_id, name"),
+        supabase.from("user_data").select("user_id, name, mobile"),
         supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
         supabase.from("master_blood_center").select("blood_center_id, name"),
       ]);
-      setUserNames(userData || []);
+      setUsers(userData || []);
       setBridges(bridgeData || []);
       setBloodCenters(bloodCenterData || []);
     };
@@ -85,9 +85,9 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
             }
             isRequired
           >
-            {userNames.map((user) => (
-              <AutocompleteItem key={user.user_id} value={user.user_id}>
-                {user.name}
+            {users.map((user) => (
+              <AutocompleteItem key={user.user_id} value={user.name}>
+                {`${user.name} - +${user.mobile}`}
               </AutocompleteItem>
             ))}
           </Autocomplete>

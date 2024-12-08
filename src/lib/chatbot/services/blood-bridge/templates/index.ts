@@ -31,7 +31,7 @@ const templateMap: Record<string, new () => BaseTemplate> = {
   notification_donation_bridge_request_confirmed: SendNotificationToDonors,
   send_notification_to_donors: SendNotificationToDonors,
   cancelled_request_bridge_volunteer: CancelBridgeRequest,
-  one_time_donors_bridge: OneTimeDonors,
+  one_time_donors_bridge2: OneTimeDonors,
 
   // donor templates
   notification_donation_bridge_request_accept: BridgeDonationRequestAccept,

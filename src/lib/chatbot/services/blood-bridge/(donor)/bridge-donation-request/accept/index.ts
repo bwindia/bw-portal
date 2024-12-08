@@ -21,7 +21,7 @@ export class BridgeDonationRequestAccept extends BaseTemplate {
             {
               type: "document",
               document: {
-                link: `${process.env.NEXT_PUBLIC_API_URL}/documents/blood-donation-checklist.pdf`,
+                link: `${process.env.NEXT_PUBLIC_APP_URL}/documents/blood-donation-checklist.pdf`,
                 filename: "Blood Donation Checklist",
               },
             },

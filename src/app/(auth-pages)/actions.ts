@@ -47,6 +47,7 @@ export const signInAction = async (
   formData: FormData
 ) => {
   const phoneFormdata = formData.get("phone") as string;
+  const countryCode = formData.get("country_code") as string;
   if (!phoneFormdata.trim()) {
     return { error: "Phone number can not be empty" };
   }
@@ -56,7 +57,7 @@ export const signInAction = async (
   if (phoneFormdata.length !== 10) {
     return { error: "Invalid phone number" };
   }
-  const phone = "+" + phoneFormdata;
+  const phone = "+" + countryCode + phoneFormdata;
   const supabase = createClient();
   const { error } = await supabase.auth.signInWithOtp({
     phone,

@@ -6,6 +6,7 @@ import FormSubmitButton from "@/components/molecules/FormSubmitButton";
 import { useFormState } from "react-dom";
 import logo from "@/assets/logos/BW Title Logo.png";
 import Image from "next/image";
+import { Select, SelectItem } from "@nextui-org/react";
 
 const SignIn = () => {
   const [state, formAction] = useFormState(signInAction, undefined);
@@ -35,10 +36,19 @@ const SignIn = () => {
               isRequired
               variant="faded"
               startContent={
-                <div className="pointer-events-none flex gap-2 items-center text-default-400">
-                  {/* <span className="material-symbols-">Phone:</span> */}
-                  <span>+</span>
-                </div>
+                <Select
+                  className="w-[75px] min-w-[75px]"
+                  defaultSelectedKeys={["91"]}
+                  id="country_code"
+                  name="country_code"
+                >
+                  <SelectItem key="91" value="91">
+                    +91
+                  </SelectItem>
+                  <SelectItem key="1" value="1">
+                    +1
+                  </SelectItem>
+                </Select>
               }
               required
             />
