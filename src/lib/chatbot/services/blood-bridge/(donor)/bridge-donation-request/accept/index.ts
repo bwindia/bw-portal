@@ -21,9 +21,8 @@ export class BridgeDonationRequestAccept extends BaseTemplate {
             {
               type: "document",
               document: {
-                // Add your document details here
-                link: "https://morth.nic.in/sites/default/files/dd12-13_0.pdf",
-                filename: "dd12-13_0.pdf",
+                link: `${process.env.NEXT_PUBLIC_API_URL}/documents/blood-donation-checklist.pdf`,
+                filename: "Blood Donation Checklist",
               },
             },
           ]
