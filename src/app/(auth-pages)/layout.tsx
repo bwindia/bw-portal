@@ -1,7 +1,11 @@
 import Image from "next/image";
 import authBanner from "@/assets/images/banners/auth-banner.jpg";
 
-const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="container flex items-center mx-auto min-h-screen p-4">
       <div className="w-full flex items-center rounded-2xl overflow-hidden shadow-small">
@@ -16,6 +20,4 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
       </div>
     </div>
   );
-};
-
-export default AuthLayout;
+}

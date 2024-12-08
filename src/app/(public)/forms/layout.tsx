@@ -1,6 +1,10 @@
 import Navbar from "@/components/organisms/Navbar";
 
-const FormsLayout = ({ children }: { children: React.ReactNode }) => {
+export default function FormsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <main className="h-svh overflow-hidden flex flex-col">
@@ -13,6 +17,4 @@ const FormsLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
     </>
   );
-};
-
-export default FormsLayout;
+}

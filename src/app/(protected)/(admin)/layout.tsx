@@ -6,11 +6,11 @@ import { redirect } from "next/navigation";
 import { SIGN_IN_PATH } from "@/utils/routes";
 import { getUserInfo } from "@/lib/supabase/user";
 
-const AdminLayout = async ({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => {
+}>) {
   const { data: user, error } = await getUserInfo();
   if (error) {
     redirect(SIGN_IN_PATH);
@@ -38,6 +38,4 @@ const AdminLayout = async ({
       </main>
     </>
   );
-};
-
-export default AdminLayout;
+}
