@@ -22,8 +22,8 @@ export class OneTimeDonors extends BaseTemplate {
     );
 
     const templateText = oneTimeDonors
-      .map((donor) => `${donor.name} - ${donor.phone_number}`)
-      .join("\n");
+      .map((donor) => `${donor.name} (+${donor.phone_number})`)
+      .join(", ");
     const formToken = await generateScheduleFormToken(scheduledRequestId);
 
     return {
@@ -32,7 +32,9 @@ export class OneTimeDonors extends BaseTemplate {
       components: [
         {
           type: "body",
-          parameters: [{ type: "text", text: templateText || "No donors found" }],
+          parameters: [
+            { type: "text", text: templateText || "No donors found" },
+          ],
         },
         {
           type: "button",

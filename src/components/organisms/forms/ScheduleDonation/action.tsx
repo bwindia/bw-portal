@@ -2,7 +2,6 @@
 import { getBridgeFighter } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { updateScheduleRequest } from "@/lib/chatbot/db/blood-bridge/schedule-request";
-import { trackDonorCall } from "@/lib/chatbot/db/blood-bridge/track-donor-call";
 import { sendMessageToUser } from "@/lib/chatbot/services/message";
 import { createClient } from "@/lib/supabase/client";
 import { getUserInfo } from "@/lib/supabase/user";
@@ -22,7 +21,11 @@ export const scheduleDonationAction = async (
   const supabase = createClient();
   const { data, error } = await supabase
     .from("tracker_donation_schedule")
-    .insert([formFields])
+    .insert([
+      Object.fromEntries(
+        Object.entries(formFields).filter(([key]) => key !== "schedule_request_id")
+      ),
+    ])
     .select();
 
   if (error) {
@@ -42,10 +45,9 @@ export const scheduleDonationAction = async (
     );
 
     const { data: donor, error: donorError } = await supabase
-      .from("user_data")
+      .from("view_user_data_rean")
       .select("*")
-      .eq("user_id", formFields.user_id)
-      .single();
+      .eq("user_id", formFields.user_id);
 
     const { data: bloodCenter, error: bloodCenterError } = await supabase
       .from("master_blood_center")
@@ -56,7 +58,6 @@ export const scheduleDonationAction = async (
     if (donorError || !donor || bloodCenterError) {
       return { error: "Something went wrong. Couldn't notify donor" };
     }
-
     const template = (mobile: string) => ({
       to: mobile,
       templateName: "donation_scheduled_donor",
@@ -66,7 +67,7 @@ export const scheduleDonationAction = async (
           parameters: [
             {
               type: "text",
-              text: donor.name,
+              text: donor[0].name,
             },
             {
               type: "text",
@@ -76,15 +77,15 @@ export const scheduleDonationAction = async (
             },
             {
               type: "text",
-              text: donor.mobile,
+              text: "+" + donor[0].phone_number,
             },
             {
               type: "text",
-              text: donor.blood_group,
+              text: donor[0].blood_group,
             },
             {
               type: "text",
-              text: formFields.donation_date,
+              text: formFields.date_of_donation,
             },
             {
               type: "text",
@@ -92,32 +93,34 @@ export const scheduleDonationAction = async (
             },
             {
               type: "text",
-              text: `${bloodCenter.address}, 
-              
-              ${bloodCenter.maps_link}`,
+              text: `${bloodCenter.address || "Address not available"}, ${bloodCenter.maps_link || "Maps link not available, Please check the website."}`,
             },
             {
               type: "text",
-              text: formFields.donation_time,
+              text: formFields.time_of_donation,
             },
             {
               type: "text",
-              text: bridgeVolunteers[0].phone_number,
+              text: `+${bridgeVolunteers[0].phone_number}`,
             },
             {
               type: "text",
-              text: bridgeFighter.name,
+              text: bridgeFighter.bridge_name,
             },
           ],
         },
       ],
     });
-    await notifyUsers(donor.mobile, template);
-    await trackDonorCall(donor);
-    bridgeVolunteers.map(async (volunteer) => {
+    try {
+      await notifyUsers(donor[0].phone_number, template);
+      bridgeVolunteers.map(async (volunteer) => {
       await notifyUsers(volunteer.phone_number, template);
     });
-    await notifyUsers(bridgeFighter.phone_number, template);
+      await notifyUsers(bridgeFighter.phone_number, template);
+    } catch (error) {
+      console.log("error", error);
+      return { error: "Something went wrong. Couldn't notify users" };
+    }
   }
 
   if (data) return { success: "Submitted successfully" };

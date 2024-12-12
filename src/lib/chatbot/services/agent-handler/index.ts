@@ -14,7 +14,7 @@ const agentHandlers: Record<MessageAgent, AgentHandler> = {
   }),
 
   [MessageAgent.BLOOD_BRIDGE]: async ({ content, from }) =>
-    await handleBloodBridgeAgent(content as { text: string, payload: string }, from),
+    await handleBloodBridgeAgent(content, from),
 
   [MessageAgent.BOUNCER]: async ({ from }) => ({
     to: from,

@@ -75,3 +75,29 @@ export const getOneTimeDonorsForBridge = async (bridge_blood_group: string) => {
   }
   return data;
 };
+
+export const updateTransfusionDate = async (
+  bridgeId: string,
+  lastTransfusionDate: string,
+  hemoglobinLevel: string,
+  nextTransfusionDate: string
+) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("tracker_blood_bridge_transfusion")
+    .insert({
+      bridge_id: bridgeId,
+      transfusion_date: lastTransfusionDate,
+      hb_level: hemoglobinLevel,
+      next_requirement_date: nextTransfusionDate,
+    })
+    .select("*")
+    .single();
+  console.log(data, "data", error, "error");
+  if (error || !data) {
+    throw new Error(
+      "We failed to update your transfusion date, please contact support."
+    );
+  }
+  return data;
+};

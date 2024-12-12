@@ -1,7 +1,7 @@
 import { CheckBridgeStatus } from "@/lib/chatbot/services/blood-bridge/check-bridge-status";
 import { FaqMessage } from "@/lib/chatbot/services/blood-bridge/faq-message";
 import { BaseTemplate } from "./base-template";
-import { RaiseEmergencyRequest } from "../(fighter)/raise-emergency-request";
+import { RaiseBloodBridgeRequest } from "@/lib/chatbot/services/blood-bridge/(fighter)/raise-blood-bridge-request";
 import { RequestRaisedByFighterSuccess } from "@/lib/chatbot/services/blood-bridge/(fighter)/request-raised-by-fighter/success";
 import { RequestRaisedByFighterCancel } from "@/lib/chatbot/services/blood-bridge/(fighter)/request-raised-by-fighter/cancel";
 import { ListBridgeDonors } from "@/lib/chatbot/services/blood-bridge/(volunteer)/list-bridge-donors";
@@ -18,13 +18,20 @@ import {
   BridgeDonationRequestRejectReasonReceived,
 } from "@/lib/chatbot/services/blood-bridge/(donor)/bridge-donation-request/reject";
 import { OneTimeDonors } from "@/lib/chatbot/services/blood-bridge/(volunteer)/one-time-donors";
+import {
+  ChangeTransfusionDate,
+  ChangeTransfusionDateForm,
+} from "@/lib/chatbot/services/blood-bridge/(fighter)/change-transfusion-date";
+import { RaiseEmergencyRequest, RaiseEmergencyRequestForm } from "@/lib/chatbot/services/emergency-request/(donor)/raise-emergency-request";
 
 const templateMap: Record<string, new () => BaseTemplate> = {
   bridge_status: CheckBridgeStatus,
   faq_message: FaqMessage,
-  raise_emergency_request: RaiseEmergencyRequest,
+  raise_emergency_request: RaiseBloodBridgeRequest,
   request_raised_by_parent_success: RequestRaisedByFighterSuccess,
   greeting_patient: RequestRaisedByFighterCancel,
+  change_transfusion_date: ChangeTransfusionDate,
+  change_transfusion_date_form: ChangeTransfusionDateForm,
 
   // volunteer templates
   donors_list_bridge: ListBridgeDonors,
@@ -43,6 +50,9 @@ const templateMap: Record<string, new () => BaseTemplate> = {
   notification_donation_bridge_request_accept_not_eligible:
     BridgeDonationRequestAcceptNotEligible,
   reject_reason_received: BridgeDonationRequestRejectReasonReceived,
+
+  raise_emergency_request_general: RaiseEmergencyRequest,
+  raise_emergency_request_form: RaiseEmergencyRequestForm,
 };
 
 export const getTemplateHandler = (templateName: string): BaseTemplate => {

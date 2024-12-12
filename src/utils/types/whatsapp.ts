@@ -89,8 +89,19 @@ export type MessageResponse = DirectMessageParams | TemplateMessageParams;
 
 export type MessageButtonContent = { text: string; payload: string };
 
+export type MessageInteractiveContent = {
+  response_json: string;
+  body: string;
+  name: string;
+};
+
+export type MessageContent =
+  | string
+  | MessageButtonContent
+  | MessageInteractiveContent;
+
 export interface MessageContext {
-  content: string | MessageButtonContent;
+  content: MessageContent;
   from: string;
   name: string;
 }
@@ -99,6 +110,13 @@ export interface TemplateContext {
   from: string;
   user: any; // Replace 'any' with your user type
   message: MessageButtonContent;
+  templateName: string;
+}
+
+export interface TemplateInteractiveContext {
+  from: string;
+  user: any; // Replace 'any' with your user type
+  message: MessageInteractiveContent;
   templateName: string;
 }
 

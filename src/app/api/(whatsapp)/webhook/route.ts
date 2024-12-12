@@ -33,7 +33,7 @@ export const POST = async (request: Request) => {
 
     const body = await request.json();
 
-    if (body.object && body.entry?.[0].changes[0].value.messages) {
+    if (body.object && body.entry?.[0].changes[0].value.messages && body.entry?.[0].changes[0].value.metadata.phone_number_id === WHATSAPP_CONFIG.PHONE_NUMBER_ID) {
       console.log("Webhook Received:", JSON.stringify(body, null, 2));
       const message = body.entry[0].changes[0].value.messages[0];
       const contact = body.entry[0].changes[0].value.contacts[0];
@@ -43,7 +43,7 @@ export const POST = async (request: Request) => {
       return new Response("EVENT_RECEIVED", { status: 200 });
     }
 
-    if (body.object && body.entry?.[0].changes[0].value.statuses) {
+    if (body.object && body.entry?.[0].changes[0].value.statuses && body.entry?.[0].changes[0].value.metadata.phone_number_id === WHATSAPP_CONFIG.PHONE_NUMBER_ID) {
       // You can process status updates here if needed
       return new Response("STATUS_RECEIVED", { status: 200 });
     }

@@ -22,7 +22,7 @@ const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to send message:", errorText);
-    throw new Error("Failed to send message");
+    throw new Error("There was an issue with the Meta platform. Please try again later.");
   }
 
   return response.json();

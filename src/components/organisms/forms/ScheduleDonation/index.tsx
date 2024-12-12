@@ -130,6 +130,16 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
               </SelectItem>
             ))}
           </Select>
+          {
+            scheduleRequestId && (
+              <input
+                hidden
+                name="donation_type_id"
+                value={donationType}
+                readOnly
+              />
+            )
+          }
         </div>
         <div className="w-full sm:w-1/2">
           {donationType === "2" && (

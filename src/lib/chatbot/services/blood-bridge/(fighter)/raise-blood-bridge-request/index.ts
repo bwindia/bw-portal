@@ -3,7 +3,7 @@ import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base
 import { getUserDetails } from "@/lib/chatbot/db/blood-bridge/fighter";
 import { getBridgeVolunteers } from "@/lib/chatbot/db/blood-bridge/fighter";
 
-export class RaiseEmergencyRequest extends BaseTemplate {
+export class RaiseBloodBridgeRequest extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
     const fighterDetails = await getUserDetails(context.user.user_id);
     const bridgeVolunteers = await getBridgeVolunteers(
