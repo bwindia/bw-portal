@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
 import { getUserByMobile, getUserDetailsByMobile } from "@/lib/supabase/user";
 import { ORGANIZATION_ID } from "@/utils/constants";
+import {
+  BRIDGES_PAGE_ROUTE,
+  SCHEDULE_DONATION_PAGE_ROUTE,
+} from "@/utils/routes";
 import { UserRole } from "@/utils/types";
 import {
   DirectMessageParams,
@@ -31,6 +35,20 @@ export const greetUser = async (
               type: "body",
               parameters: [{ type: "text", text: userDetails[0].name }],
             },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "2",
+              parameters: [{ type: "text", text: BRIDGES_PAGE_ROUTE }],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "3",
+              parameters: [
+                { type: "text", text: SCHEDULE_DONATION_PAGE_ROUTE },
+              ],
+            },
           ],
         };
       } else if (user.roles.includes(UserRole.FIGHTER)) {
@@ -42,14 +60,14 @@ export const greetUser = async (
               type: "body",
               parameters: [
                 { type: "text", text: userDetails[0].name },
-                { type: "text", text: userDetails[0].blood_group },
+                { type: "text", text: userDetails[0].blood_group || "N/A" },
                 {
                   type: "text",
-                  text: userDetails[0].last_bridge_donation_date,
+                  text: userDetails[0].last_bridge_donation_date || "N/A",
                 },
                 {
                   type: "text",
-                  text: userDetails[0].expected_next_transfusion_date,
+                  text: userDetails[0].expected_next_transfusion_date || "N/A",
                 },
               ],
             },
@@ -64,9 +82,9 @@ export const greetUser = async (
               type: "body",
               parameters: [
                 { type: "text", text: userDetails[0].name },
-                { type: "text", text: userDetails[0].blood_group },
-                { type: "text", text: userDetails[0].last_donation_date },
-                { type: "text", text: userDetails[0].next_eligible_date },
+                { type: "text", text: userDetails[0].blood_group || "N/A" },
+                { type: "text", text: userDetails[0].last_donation_date || "N/A" },
+                { type: "text", text: userDetails[0].next_eligible_date || "N/A" },
               ],
             },
           ],
@@ -80,9 +98,9 @@ export const greetUser = async (
               type: "body",
               parameters: [
                 { type: "text", text: userDetails[0].name },
-                { type: "text", text: userDetails[0].blood_group },
-                { type: "text", text: userDetails[0].last_donation_date },
-                { type: "text", text: userDetails[0].next_eligible_date },
+                { type: "text", text: userDetails[0].blood_group || "N/A" },
+                { type: "text", text: userDetails[0].last_donation_date || "N/A" },
+                { type: "text", text: userDetails[0].next_eligible_date || "N/A" },
               ],
             },
           ],

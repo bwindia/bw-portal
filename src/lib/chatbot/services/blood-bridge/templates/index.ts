@@ -22,7 +22,11 @@ import {
   ChangeTransfusionDate,
   ChangeTransfusionDateForm,
 } from "@/lib/chatbot/services/blood-bridge/(fighter)/change-transfusion-date";
-import { RaiseEmergencyRequest, RaiseEmergencyRequestForm } from "@/lib/chatbot/services/emergency-request/(donor)/raise-emergency-request";
+import {
+  RaiseEmergencyRequest,
+  RaiseEmergencyRequestForm,
+} from "@/lib/chatbot/services/emergency-request/(donor)/raise-emergency-request";
+import { GenerateCertificate } from "@/lib/chatbot/services/blood-bridge/(donor)/generate-certificate";
 
 const templateMap: Record<string, new () => BaseTemplate> = {
   bridge_status: CheckBridgeStatus,
@@ -50,6 +54,7 @@ const templateMap: Record<string, new () => BaseTemplate> = {
   notification_donation_bridge_request_accept_not_eligible:
     BridgeDonationRequestAcceptNotEligible,
   reject_reason_received: BridgeDonationRequestRejectReasonReceived,
+  download_donor_certificate: GenerateCertificate,
 
   raise_emergency_request_general: RaiseEmergencyRequest,
   raise_emergency_request_form: RaiseEmergencyRequestForm,
@@ -58,7 +63,7 @@ const templateMap: Record<string, new () => BaseTemplate> = {
 export const getTemplateHandler = (templateName: string): BaseTemplate => {
   const TemplateHandler = templateMap[templateName];
   if (!TemplateHandler) {
-    throw new Error(`No handler found for template: ${templateName}`);
+    throw new Error(`We couldn't process your request. Please try again later.`);
   }
   return new TemplateHandler();
 };

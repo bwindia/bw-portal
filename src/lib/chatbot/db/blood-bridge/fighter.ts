@@ -76,11 +76,11 @@ export const getOneTimeDonorsForBridge = async (bridge_blood_group: string) => {
   return data;
 };
 
-export const updateTransfusionDate = async (
+export const changeTransfusionDate = async (
   bridgeId: string,
-  lastTransfusionDate: string,
-  hemoglobinLevel: string,
-  nextTransfusionDate: string
+  lastTransfusionDate: Date,
+  hemoglobinLevel: number,
+  nextTransfusionDate: Date
 ) => {
   const supabase = createClient();
   const { data, error } = await supabase
