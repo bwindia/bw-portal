@@ -77,13 +77,10 @@ const Table = ({
   const [page, setPage] = useState(1);
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    // column: "firstName",
-    // direction: "ascending",
-  });
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | undefined>();
 
   const sortedFilteredItems = useMemo(() => {
-    if (!sortDescriptor.column) return filteredItems;
+    if (!sortDescriptor) return filteredItems;
 
     return [...filteredItems].sort((a, b) => {
       const first = a[

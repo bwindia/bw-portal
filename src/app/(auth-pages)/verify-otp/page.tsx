@@ -3,41 +3,19 @@ import FormSubmitButton from "@/components/molecules/FormSubmitButton";
 import { SIGN_IN_PATH } from "@/utils/routes";
 import { Message } from "@/utils/types";
 import { redirect } from "next/navigation";
-import { useRef, useState } from "react";
 import { signInAction, verifyOtpAction } from "../actions";
 import FormMessage from "@/components/molecules/FormMessage";
 import { useFormState } from "react-dom";
 import logo from "@/assets/logos/BW Title Logo.png";
 import Image from "next/image";
+import { InputOtp } from "@nextui-org/react";
 
 const VerifyOtpPage = ({ searchParams }: { searchParams: Message }) => {
   if (!("message" in searchParams)) {
     redirect(SIGN_IN_PATH);
   }
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [state, formAction] = useFormState(verifyOtpAction, undefined);
   const [signInState, signInFormAction] = useFormState(signInAction, undefined);
-
-  const handleChange = (value: string, index: number) => {
-    const updatedOtp = [...otp];
-    updatedOtp[index] = value;
-    setOtp(updatedOtp);
-
-    // Move to next input if available
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
 
   return (
     <>
@@ -57,24 +35,8 @@ const VerifyOtpPage = ({ searchParams }: { searchParams: Message }) => {
               className="flex flex-col items-center gap-3"
               action={formAction}
             >
-              <div className="flex gap-4 justify-center mb-6">
-                {otp.map((value, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    maxLength={1}
-                    value={value}
-                    onChange={(e) => handleChange(e.target.value, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    ref={(el) => {
-                      inputRefs.current[index] = el; // Remove return value
-                    }}
-                    className="w-12 h-12 text-center text-2xl border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                ))}
-              </div>
-              <input hidden name="token" value={otp.join("")} />
-              <input hidden name="phone" value={searchParams.message} />
+              <InputOtp name="token" length={6} size="lg" variant="faded" />
+              <input hidden readOnly name="phone" value={searchParams.message} />
               <FormSubmitButton
                 errorMessage={state}
                 className="w-[367px]"
