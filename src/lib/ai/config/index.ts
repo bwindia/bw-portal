@@ -1,6 +1,6 @@
 export const AI_CONFIG = {
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-  OPENAI_MODEL: "gpt-3.5-turbo",
+  OPENAI_MODEL: "gpt-4o-mini",
 } as const;
 
 export const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
