@@ -1,6 +1,5 @@
 "use client";
 
-import { signOutAction } from "@/app/(auth-pages)/actions";
 import {
   Navbar as NextUiNavbar,
   NavbarContent,
@@ -12,7 +11,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import bloodWarriorsLogo from "@/assets/logos/BW Long Logo.png";
-import { HOME_PAGE_ROUTE } from "@/utils/routes";
+import { HOME_PAGE_ROUTE, SIGN_IN_PATH } from "@/utils/routes";
 import { useState } from "react";
 
 const Navbar = () => {
@@ -40,13 +39,18 @@ const Navbar = () => {
             </Link>
           </NavbarMenuItem>
           <NavbarMenuItem>
+            <Link href={SIGN_IN_PATH}>
+              <div className={`w-full text-base`}>Sign In</div>
+            </Link>
+          </NavbarMenuItem>
+          {/* <NavbarMenuItem>
             <div
               className="w-full text-base text-danger"
               onClick={async () => await signOutAction()}
             >
               Logout
             </div>
-          </NavbarMenuItem>
+          </NavbarMenuItem> */}
         </NavbarMenu>
       </NextUiNavbar>
     </>

@@ -36,7 +36,7 @@ export const getBridgeVolunteers = async (bridge_id: string) => {
     .select("*")
     .eq("bridge_id", bridge_id)
     .eq("role", UserRole.VOLUNTEER);
-  if (!data) {
+  if (!data || data.length === 0) {
     throw new Error(
       "Volunteer has not been assigned to this bridge yet. Please contact support."
     );

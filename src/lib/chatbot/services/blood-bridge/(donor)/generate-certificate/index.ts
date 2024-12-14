@@ -10,7 +10,6 @@ import path from "path";
 
 export class GenerateCertificate extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
-    console.log("Generating Certificate");
     const donorAllDonations = await getDonorAllDonations(context.user.user_id);
 
     const totalDonations = donorAllDonations.length;
@@ -22,7 +21,6 @@ export class GenerateCertificate extends BaseTemplate {
       donorAllDonations[0].donation_date,
       badge
     );
-    console.log("Certificate Generated", pdfPath);
 
     return {
       to: context.from,
