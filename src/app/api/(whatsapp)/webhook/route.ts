@@ -38,8 +38,19 @@ export const POST = async (request: Request) => {
     const body = await request.json();
 
     if (body.object && body.entry?.[0].changes[0].value.messages) {
+      console.log("Webhook Received:", JSON.stringify(body, null, 2)); 
       const message = body.entry[0].changes[0].value.messages[0];
       
+      // Check message age
+      const messageTimestamp = parseInt(message.timestamp);
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      const ONE_HOUR = 3600; // in seconds
+      
+      if (currentTimestamp - messageTimestamp > ONE_HOUR) {
+        console.log(`Skipping old message (${message.id}), age: ${currentTimestamp - messageTimestamp} seconds`);
+        return new Response("OLD_MESSAGE", { status: 200 });
+      }
+
       // Check if we've already processed this message
       if (processedMessageIds.has(message.id)) {
         console.log(`Duplicate message detected: ${message.id}`);
