@@ -1,9 +1,7 @@
 import { WHATSAPP_BASE_URL } from "@/lib/chatbot/config";
-import { WHATSAPP_TEMPLATES } from "@/lib/chatbot/templates";
 import { createClient } from "@/lib/supabase/client";
 import {
   WhatsAppMessagePayload,
-  AppointmentReminderParams,
   DirectMessageParams,
   TemplateMessageParams,
   MessageResponse,
@@ -26,55 +24,6 @@ const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   }
 
   return response.json();
-};
-
-export const sendAppointmentReminder = async ({
-  to,
-  name,
-  time,
-  appointmentType,
-}: AppointmentReminderParams) => {
-  const yesButtonPayload = { id: "123" };
-  const noButtonPayload = { id: "126587" };
-
-  const payload: WhatsAppMessagePayload = {
-    messaging_product: "whatsapp",
-    to,
-    type: "template",
-    template: {
-      name: WHATSAPP_TEMPLATES.APPOINTMENT_REMINDER,
-      language: { code: "en" },
-      components: [
-        {
-          type: "button",
-          sub_type: "quick_reply",
-          index: "0",
-          parameters: [
-            { type: "payload", payload: JSON.stringify(yesButtonPayload) },
-          ],
-        },
-        {
-          type: "button",
-          sub_type: "quick_reply",
-          index: "1",
-          parameters: [
-            { type: "payload", payload: JSON.stringify(noButtonPayload) },
-          ],
-        },
-        {
-          type: "body",
-          parameters: [
-            { type: "text", text: name },
-            { type: "text", text: appointmentType },
-            { type: "text", text: time },
-            { type: "text", text: "attend" },
-          ],
-        },
-      ],
-    },
-  };
-
-  return sendWhatsAppMessage(payload);
 };
 
 const sendDirectMessage = async ({

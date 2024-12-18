@@ -37,6 +37,13 @@ const getTemplateForForm = (
       "screen_0_TextInput_1",
       "screen_0_DatePicker_2",
     ],
+    donor_registration_form: [
+      "screen_0_Your_Full_Name_0",
+      "screen_0_Location_Pincode_1",
+      "screen_0_Email_2",
+      "screen_0_Blood_Group_3",
+      "screen_0_Select_this_if_you_want_to_be_the_vision_guardian_of_ThalassemiaFreeIndia2035_4"
+    ]
   };
 
   for (const [formType, fields] of Object.entries(formPatterns)) {

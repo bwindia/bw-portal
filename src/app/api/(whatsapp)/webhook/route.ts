@@ -12,6 +12,10 @@ const ensureAnalyzerInitialized = async () => {
   }
 }
 
+// Add a simple in-memory cache for message IDs
+const processedMessageIds = new Set<string>();
+const MESSAGE_CACHE_SIZE = 1000; // Adjust based on your needs
+
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
 
@@ -33,14 +37,32 @@ export const POST = async (request: Request) => {
 
     const body = await request.json();
 
-    if (body.object && body.entry?.[0].changes[0].value.messages && body.entry?.[0].changes[0].value.metadata.phone_number_id === WHATSAPP_CONFIG.PHONE_NUMBER_ID) {
-      console.log("Webhook Received:", JSON.stringify(body, null, 2));
+    if (body.object && body.entry?.[0].changes[0].value.messages) {
       const message = body.entry[0].changes[0].value.messages[0];
-      const contact = body.entry[0].changes[0].value.contacts[0];
+      
+      // Check if we've already processed this message
+      if (processedMessageIds.has(message.id)) {
+        console.log(`Duplicate message detected: ${message.id}`);
+        return new Response("DUPLICATE_EVENT", { status: 200 });
+      }
 
-      await handleWhatsAppMessage(message, contact);
+      // Add message ID to cache
+      processedMessageIds.add(message.id);
+      
+      // Prevent memory leaks by limiting cache size
+      if (processedMessageIds.size > MESSAGE_CACHE_SIZE) {
+        const firstId = processedMessageIds.values().next().value;
+        if (firstId) {
+          processedMessageIds.delete(firstId);
+        }
+      }
 
-      return new Response("EVENT_RECEIVED", { status: 200 });
+      if (body.entry?.[0].changes[0].value.metadata.phone_number_id === WHATSAPP_CONFIG.PHONE_NUMBER_ID) {
+        console.log("Processing new message:", message.id);
+        const contact = body.entry[0].changes[0].value.contacts[0];
+        await handleWhatsAppMessage(message, contact);
+        return new Response("EVENT_RECEIVED", { status: 200 });
+      }
     }
 
     if (body.object && body.entry?.[0].changes[0].value.statuses && body.entry?.[0].changes[0].value.metadata.phone_number_id === WHATSAPP_CONFIG.PHONE_NUMBER_ID) {

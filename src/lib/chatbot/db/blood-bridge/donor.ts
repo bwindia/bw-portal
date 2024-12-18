@@ -11,7 +11,7 @@ export const getDonorAllDonations = async (donorId: string) => {
 
   if (error) {
     throw new Error(
-      "We couldn't fetch your donations. Please try again later."
+      "Something went wrong while fetching your donations. Please try again later."
     );
   }
 
@@ -33,7 +33,7 @@ export const getTotalDonorsOfBadge = async (badge: string): Promise<number> => {
 
   if (error) {
     throw new Error(
-      "We couldn't fetch your donations. Please try again later."
+      "Something went wrong while fetching your donations. Please try again later."
     );
   }
 
@@ -41,3 +41,87 @@ export const getTotalDonorsOfBadge = async (badge: string): Promise<number> => {
   return uniqueUserIds.size;
 };
 
+export const registerDonor = async (donorData: any, mobile: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("user_data")
+    .update(donorData)
+    .eq("mobile", mobile)
+    .select("user_id")
+    .single();
+  if (error) {
+    throw new Error(
+      "Something went wrong while registering you as a donor. Please try again"
+    );
+  }
+  return data;
+};
+
+export const updateRoleByBridgePreference = async (
+  bridgePreference: boolean,
+  userId: string
+) => {
+  const supabase = createClient();
+  if (bridgePreference) {
+    const { error: bridgeDonorRoleError } = await supabase
+      .from("mapping_user_role")
+      .update({ role_status: true })
+      .eq("user_id", userId)
+      .eq("role_id", 6);
+    const { error: emergencyDonorRoleError } = await supabase
+      .from("mapping_user_role")
+      .update({ role_status: false })
+      .eq("user_id", userId)
+      .eq("role_id", 5);
+
+    if (bridgeDonorRoleError || emergencyDonorRoleError)
+      throw new Error(
+        "Something went wrong while updating your role. Please try again"
+      );
+  } else {
+    const { error: emergencyDonorRoleError } = await supabase
+      .from("mapping_user_role")
+      .update({ role_status: true })
+      .eq("user_id", userId)
+      .eq("role_id", 5);
+    const { error: bridgeDonorRoleError } = await supabase
+      .from("mapping_user_role")
+      .update({ role_status: false })
+      .eq("user_id", userId)
+      .eq("role_id", 6);
+    if (emergencyDonorRoleError || bridgeDonorRoleError)
+      throw new Error(
+        "Something went wrong while updating your role. Please try again"
+      );
+  }
+  return { bridgePreference, userId };
+};
+
+export const storeCertificate = async (pdfName: string, pdfBuffer: Buffer) => {
+  const supabase = createClient();
+  const { data, error } = await supabase.storage
+    .from("chatbot")
+    .upload(`certificates/${pdfName}`, pdfBuffer, {
+      contentType: "application/pdf",
+      cacheControl: "3600",
+      upsert: false,
+    });
+  if (error) {
+    if (error.message === "The resource already exists") {
+      return;
+    } else {
+      throw new Error(
+        "Something went wrong while storing your certificate. Please try again later."
+      );
+    }
+  }
+  return data;
+};
+
+export const getCertificateUrl = async (pdfName: string) => {
+  const supabase = createClient();
+  const {
+    data: { publicUrl },
+  } = await supabase.storage.from("chatbot").getPublicUrl(`certificates/${pdfName}`);
+  return publicUrl;
+};

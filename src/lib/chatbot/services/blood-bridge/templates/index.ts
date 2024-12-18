@@ -27,6 +27,8 @@ import {
   RaiseEmergencyRequestForm,
 } from "@/lib/chatbot/services/emergency-request/(donor)/raise-emergency-request";
 import { GenerateCertificate } from "@/lib/chatbot/services/blood-bridge/(donor)/generate-certificate";
+import { ActivateUser } from "@/lib/chatbot/services/emergency-request/(donor)/activate-user";
+import { DonorRegistration, DonorRegistrationForm } from "@/lib/chatbot/services/emergency-request/(donor)/register-donor";
 
 const templateMap: Record<string, new () => BaseTemplate> = {
   bridge_status: CheckBridgeStatus,
@@ -55,6 +57,9 @@ const templateMap: Record<string, new () => BaseTemplate> = {
     BridgeDonationRequestAcceptNotEligible,
   reject_reason_received: BridgeDonationRequestRejectReasonReceived,
   download_donor_certificate: GenerateCertificate,
+  activation_success: ActivateUser,
+  register_as_donor: DonorRegistration,
+  donor_registration_form: DonorRegistrationForm,
 
   raise_emergency_request_general: RaiseEmergencyRequest,
   raise_emergency_request_form: RaiseEmergencyRequestForm,

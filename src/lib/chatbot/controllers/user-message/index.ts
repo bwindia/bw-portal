@@ -5,28 +5,48 @@ import { convertAudioToText } from "@/lib/ai/services/speech-to-text";
 import { WHATSAPP_CONFIG, WHATSAPP_URL } from "@/lib/chatbot/config";
 import { MessageProcessor } from "@/utils/types/whatsapp";
 import { getResponseForAgent } from "../../services/agent-handler";
+import axios from "axios";
 
 const handleAudioMessage = async (message: any): Promise<string> => {
   const audioId = message.audio.id;
 
-  // Download the audio file from Meta's servers
-  const response = await fetch(`${WHATSAPP_URL}/${audioId}`, {
-    headers: {
-      Authorization: `Bearer ${WHATSAPP_CONFIG.ACCESS_TOKEN}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to process audio message, please try again later.");
-  }
+  try {
+    const mediaResponse = await fetch(`${WHATSAPP_URL}/${audioId}/`, {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_CONFIG.ACCESS_TOKEN}`,
+      },
+    });
 
-  const audioBuffer = await response.arrayBuffer();
+    if (!mediaResponse.ok) {
+      throw new Error(`Failed to download audio: ${mediaResponse.statusText}`);
+    }
 
-  if (!audioBuffer) {
-    throw new Error("Failed to process audio message, please try again later.");
+    const mediaData = await mediaResponse.json();
+    if (!mediaData.url) {
+      throw new Error("No media URL found in response");
+    }
+
+    const response = await axios.get(mediaData.url, {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_CONFIG.ACCESS_TOKEN}`,
+        "Content-Type": mediaData.mime_type,
+      },
+      responseType: "arraybuffer",
+    });
+
+    if (response.data) {
+      return await convertAudioToText(response.data);
+    }
+
+    throw new Error(
+      "We couldn't process your audio message, please try again later."
+    );
+  } catch (error) {
+    console.error("Error in handleAudioMessage", error);
+    throw new Error(
+      "We couldn't process your audio message, please try again later."
+    );
   }
-  // Convert audio to text using OpenAI's Whisper API (or any other speech-to-text service)
-  const text = await convertAudioToText(audioBuffer);
-  return text;
 };
 
 const messageProcessors: Record<string, MessageProcessor> = {
@@ -41,7 +61,6 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
   const name = contact.profile.name;
   const messageType = message.type;
 
-  // Determine message type
   let messageContent;
   let agent: MessageAgent | undefined;
 
@@ -71,18 +90,22 @@ export const handleWhatsAppMessage = async (message: any, contact: any) => {
       agent || "NA"
     );
   } catch (error: any) {
+    console.error("Error in handleWhatsAppMessage", error);
+    const isSystemError = error.name !== "Error";
+    const errorMessage = isSystemError
+      ? "Our systems are currently busy, please try again later."
+      : error.message;
+
     const response = {
       to: from,
-      message: error.message as string,
+      message: errorMessage,
     };
-    if (!(error instanceof Error)) {
-      response.message = "Our systems are currently busy, please try again later.";
-    }
+
     await sendMessageToUser(
       response,
       messageType,
       messageContent as string,
-      agent || "NA"
+      `error-${agent || "NA"}`
     );
   }
 };

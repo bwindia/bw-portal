@@ -50,12 +50,11 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
     fetchData();
     if (scheduleRequestId) {
       const fetchScheduleData = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("tracker_emergency_request")
           .select("request_type, bridge_id")
           .eq("id", scheduleRequestId)
           .single();
-        console.log("data", data, error);
         setDonationType(data?.request_type?.toString());
         setAutoCompleteFields((prev) => ({
           ...prev,
@@ -72,9 +71,9 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
         <div className="w-full sm:w-1/2">
           <Autocomplete
             // name="user_id"
-            label="Name"
+            label="Donor Name"
             variant="faded"
-            placeholder="Search by name"
+            placeholder="Search by name or mobile number"
             labelPlacement="outside"
             selectedKey={autoCompleteFields.user_id}
             onSelectionChange={(key) =>

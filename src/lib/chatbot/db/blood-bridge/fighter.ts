@@ -93,7 +93,6 @@ export const changeTransfusionDate = async (
     })
     .select("*")
     .single();
-  console.log(data, "data", error, "error");
   if (error || !data) {
     throw new Error(
       "We failed to update your transfusion date, please contact support."

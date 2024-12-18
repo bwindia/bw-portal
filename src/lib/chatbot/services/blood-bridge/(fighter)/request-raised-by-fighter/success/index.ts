@@ -42,21 +42,10 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
             },
           ],
         },
-        // {
-        //   type: "button",
-        //   sub_type: "url",
-        //   index: "0",
-        //   parameters: [
-        //     {
-        //       type: "text",
-        //       text: `tel:+91${fighterDetails.phone_number}`,
-        //     },
-        //   ],
-        // },
         {
           type: "button",
           sub_type: "quick_reply",
-          index: "1",
+          index: "0",
           parameters: [
             {
               type: "payload",
@@ -67,7 +56,7 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
         {
           type: "button",
           sub_type: "quick_reply",
-          index: "2",
+          index: "1",
           parameters: [
             {
               type: "payload",

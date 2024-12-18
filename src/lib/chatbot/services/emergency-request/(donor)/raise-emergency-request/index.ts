@@ -165,7 +165,7 @@ const validateEmergencyRequestForm = (emergencyRequest: any) => {
   let errorMessage = "";
 
   // Check if requirement date is in the future
-  if (new Date(emergencyRequest.requirement_date) < new Date()) {
+  if (new Date(emergencyRequest.requirement_date) <= new Date()) {
     errorMessage += "Requirement date must be in the future. ";
   }
 
