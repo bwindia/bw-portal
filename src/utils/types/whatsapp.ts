@@ -16,11 +16,14 @@ export type WhatsAppTemplate = {
 export type WhatsAppMessagePayload = {
   messaging_product: "whatsapp";
   to: string;
-  type: "template" | "text";
+  type: "template" | "text" | "audio";
   template?: WhatsAppTemplate;
   text?: {
     body: string;
     preview_url?: boolean;
+  };
+  audio?: {
+    id: string;
   };
 };
 

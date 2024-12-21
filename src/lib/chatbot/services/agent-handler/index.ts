@@ -10,7 +10,7 @@ const agentHandlers: Record<MessageAgent, AgentHandler> = {
 
   [MessageAgent.FAQ]: async ({ content, from }) => ({
     to: from,
-    message: await handleFAQ(content as string),
+    message: await handleFAQ(content as string, from),
   }),
 
   [MessageAgent.BLOOD_BRIDGE]: async ({ content, from }) =>

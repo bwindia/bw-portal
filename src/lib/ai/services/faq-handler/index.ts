@@ -1,4 +1,5 @@
 import { AI_CONFIG } from "@/lib/ai/config";
+import { getFaqMessages } from "@/lib/chatbot/db/message";
 
 const QUESTION_PROMPT_SYSTEM = `Veeru, you are an empathetic and research-driven AI chatbot representing Blood Warriors, a non-profit organization dedicated to Thalassemia care and blood donation. Your role is to educate users about Thalassemia, a genetic blood disorder caused by inherited mutations that affect hemoglobin production. For severe cases like Thalassemia Major, patients require regular blood transfusions every 15–20 days to manage their condition. Your primary mission is to promote awareness about prevention, especially the importance of High-Performance Liquid Chromatography (HPLC) testing, which identifies carriers of the disorder. Encourage users to combine this testing with genetic counseling to make informed decisions before marriage or pregnancy, reducing the likelihood of passing Thalassemia to future generations.
 
@@ -48,11 +49,27 @@ const handleGeminiRequest = async (question: string): Promise<string> => {
   return data.candidates[0].content.parts[0].text;
 };
 
-const handleOpenAIRequest = async (question: string): Promise<string> => {
+const handleOpenAIRequest = async (
+  question: string,
+  from: string
+): Promise<string> => {
   const openaiApiKey = AI_CONFIG.OPENAI_API_KEY;
   if (!openaiApiKey) {
     throw new Error("OpenAI API key is not configured");
   }
+
+  const messages = await getFaqMessages(from);
+
+  const conversationHistory = messages.flatMap((message) => [
+    {
+      role: "user",
+      content: message.message,
+    },
+    {
+      role: "assistant",
+      content: message.response,
+    },
+  ]);
 
   const response = await fetch(AI_CONFIG.OPENAI_URL, {
     method: "POST",
@@ -61,12 +78,13 @@ const handleOpenAIRequest = async (question: string): Promise<string> => {
       Authorization: `Bearer ${openaiApiKey}`,
     },
     body: JSON.stringify({
-      model: AI_CONFIG.OPENAI_MODEL,
+      model: AI_CONFIG.OPENAI_40_MINI_MODEL,
       messages: [
         {
           role: "system",
           content: QUESTION_PROMPT_SYSTEM,
         },
+        ...conversationHistory,
         {
           role: "user",
           content: question,
@@ -85,7 +103,10 @@ const handleOpenAIRequest = async (question: string): Promise<string> => {
     );
   }
 
-  return data.choices[0].message.content;
+  // Remove ** and replace with *
+  const formattedResponse = data.choices[0].message.content.replace(/(\*\*|\*\*)/g, '*');
+
+  return formattedResponse;
 };
 
 const handleClaudeRequest = async (question: string): Promise<string> => {
@@ -103,7 +124,7 @@ const handleClaudeRequest = async (question: string): Promise<string> => {
     },
     body: JSON.stringify({
       model: AI_CONFIG.CLAUDE_MODEL,
-      system: QUESTION_PROMPT_SYSTEM, // System prompt moved here
+      system: QUESTION_PROMPT_SYSTEM,
       messages: [
         {
           role: "user",
@@ -126,44 +147,28 @@ const handleClaudeRequest = async (question: string): Promise<string> => {
   return data.content[0].text;
 };
 
-export const handleFAQ = async (question: string): Promise<string> => {
-  // const conversationHistory = await getFaqMessages(from);
+export const handleFAQ = async (
+  question: string,
+  from: string
+): Promise<string> => {
   try {
-    // Try OpenAI first
-    return await handleOpenAIRequest(question);
+    return await handleOpenAIRequest(question, from);
   } catch (openaiError: any) {
     console.error("OpenAI failed, trying Gemini...", openaiError.message);
 
     try {
-      // If OpenAI fails, try Claude
       return await handleClaudeRequest(question);
     } catch (claudeError: any) {
       console.error("Claude failed, trying Gemini...", claudeError.message);
 
       try {
-        // If Claude fails, try Gemini as final fallback
         return await handleGeminiRequest(question);
       } catch (geminiError: any) {
-        // If all services fail, throw a comprehensive error
+        console.error("Gemini failed, trying OpenAI...", geminiError.message);
         throw new Error(
-          `All AI services failed. OpenAI: ${openaiError.message}, Gemini: ${geminiError.message}, Claude: ${claudeError.message}`
+          "We are facing some issues internally. Please try again later."
         );
       }
     }
   }
 };
-
-// const getFaqMessages = async (conversationId: string) => {
-//   const { data: messages, error } = await supabase.from('messages')
-//     .select('*')
-//     .eq('conversation_id', conversationId)
-//     .eq('agent', 'faq')
-//     .order('created_at', { ascending: true })
-//     .limit(10); // Limit to last 10 messages to keep context window manageable
-
-//   if (error) {
-//     return [];
-//   }
-
-//   return messages;
-// };

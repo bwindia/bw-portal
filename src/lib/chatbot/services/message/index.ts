@@ -1,3 +1,4 @@
+import { convertTextToSpeech } from "@/lib/ai/text-to-speech";
 import { WHATSAPP_BASE_URL } from "@/lib/chatbot/config";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -6,6 +7,8 @@ import {
   TemplateMessageParams,
   MessageResponse,
 } from "@/utils/types/whatsapp";
+import FormData from "form-data";
+import { Buffer } from 'buffer';
 
 const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   const response = await fetch(`${WHATSAPP_BASE_URL}/messages`, {
@@ -20,10 +23,74 @@ const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to send message:", errorText);
-    throw new Error("There was an issue with the Meta platform. Please try again later.");
+    throw new Error(
+      "There was an issue with the Meta platform. Please try again later."
+    );
   }
 
   return response.json();
+};
+
+const uploadMediaToWhatsApp = async (
+  buffer: Buffer,
+  type: string
+): Promise<string> => {
+  try {
+    const formData = new FormData();
+    formData.append("messaging_product", "whatsapp");
+    formData.append("type", type);
+    formData.append("file", buffer, {
+      filename: "audio.mp3",
+      contentType: "audio/mpeg",
+    });
+
+    const response = await fetch(`${WHATSAPP_BASE_URL}/media`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.META_ACCESS_TOKEN}`,
+        ...formData.getHeaders(),
+      },
+      body: Buffer.from(formData.getBuffer()),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload media: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.id;
+  } catch (error) {
+    console.error("Error uploading media:", error);
+    throw new Error("Failed to upload audio file");
+  }
+};
+
+const sendAudioMessage = async ({
+  to,
+  audioBuffer,
+}: {
+  to: string;
+  audioBuffer: Buffer;
+}) => {
+  try {
+    // First, upload the audio file to WhatsApp
+    const mediaId = await uploadMediaToWhatsApp(audioBuffer, "audio");
+
+    // Then send the audio message using the media ID
+    const payload: WhatsAppMessagePayload = {
+      messaging_product: "whatsapp",
+      to,
+      type: "audio",
+      audio: {
+        id: mediaId,
+      },
+    };
+
+    return sendWhatsAppMessage(payload);
+  } catch (error) {
+    console.error("Error sending audio message:", error);
+    throw new Error("Failed to send audio message");
+  }
 };
 
 const sendDirectMessage = async ({
@@ -64,15 +131,36 @@ const sendTemplateMessage = async ({
   return sendWhatsAppMessage(messagePayload);
 };
 
-export const sendMessageToUser = async (response: MessageResponse, messageType: "text" | "audio", message: string, agent: string) => {
+export const sendMessageToUser = async (
+  response: MessageResponse,
+  messageType: "text" | "audio",
+  message: string,
+  agent: string
+) => {
   if ("templateName" in response) {
     await sendTemplateMessage(response);
   } else if ("message" in response) {
-    await sendDirectMessage(response);
+    if (messageType === "audio") {
+      try {
+        const audioBuffer = await convertTextToSpeech(response.message);
+        await sendAudioMessage({ to: response.to, audioBuffer });
+      } catch (error) {
+        console.error("Error sending audio message:", error);
+        await sendDirectMessage(response);
+      }
+    } else {
+      await sendDirectMessage(response);
+    }
   } else {
     throw new Error("Invalid message type");
   }
-  await storeMessageToDatabase(response, messageType, message, agent, response.to); 
+  await storeMessageToDatabase(
+    response,
+    messageType,
+    message,
+    agent,
+    response.to
+  );
 };
 
 export const storeMessageToDatabase = async (
