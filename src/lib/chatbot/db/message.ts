@@ -32,19 +32,9 @@ const getRecentMessages = async (mobile: string) => {
 
 export const getFaqMessages = async (mobile: string) => {
   const messages = await getRecentMessages(mobile);
-
   if (!messages) {
     return [];
   }
-
-  const recentFaqMessages = [];
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].agent === "faq") {
-      recentFaqMessages.unshift(messages[i]);
-    } else {
-      break;
-    }
-  }
-
-  return recentFaqMessages;
+  const faqMessages = messages.filter(m => m.agent === "faq");
+  return faqMessages;
 };

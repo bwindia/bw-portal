@@ -3,6 +3,7 @@ export const AI_CONFIG = {
   OPENAI_40_MINI_MODEL: "gpt-4o-mini",
   OPENAI_40_MODEL: "gpt-4o",
   OPENAI_35_MODEL: "gpt-3.5-turbo",
+  OPENAI_EMBEDDING_MODEL: "text-embedding-3-small",
   OPENAI_SPEECH_MODEL: "tts-1",
   OPENAI_URL: "https://api.openai.com/v1/chat/completions",
   OPENAI_SPEECH_URL: "https://api.openai.com/v1/audio/speech",

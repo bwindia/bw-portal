@@ -145,8 +145,8 @@ export const sendMessageToUser = async (
       } catch (error) {
         console.error("Error sending audio message:", error);
       }
-      await sendDirectMessage(response);
     }
+    await sendDirectMessage(response);
   } else {
     throw new Error("Invalid message type");
   }

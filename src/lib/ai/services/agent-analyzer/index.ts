@@ -1,23 +1,58 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { Document } from "@langchain/core/documents";
 import { FaissStore } from "@langchain/community/vectorstores/faiss";
-import { TRAINING_DATA } from "@/lib/ai/config/data";
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { RunnableSequence } from "@langchain/core/runnables";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 import { MessageAgent } from "@/utils/types/whatsapp";
+import {
+  TRAINING_DATA,
+  GREETING_PATTERNS,
+  BLOOD_BRIDGE_PATTERNS,
+  QUESTION_PATTERNS,
+} from "@/lib/ai/config/data";
+import { AI_CONFIG } from "@/lib/ai/config";
 
-// Singleton instance for the analyzer
+// Singleton instance
 let instance: {
   embeddings: OpenAIEmbeddings;
   vectorstore: FaissStore;
+  classifier?: RunnableSequence;
 } | null = null;
 
 export const initializeAnalyzer = async (openAIApiKey: string) => {
   if (!instance) {
     const embeddings = new OpenAIEmbeddings({
       openAIApiKey,
-      modelName: "text-embedding-3-small",
+      modelName: AI_CONFIG.OPENAI_EMBEDDING_MODEL,
     });
+
     const vectorstore = await initializeVectorstore(embeddings);
-    instance = { embeddings, vectorstore };
+
+    // Setup LangChain classifier chain
+    const classifierPrompt = PromptTemplate.fromTemplate(`
+      Classify the following message into one of these categories:
+      - GREETING: Welcome messages
+      - BLOOD_BRIDGE: Blood donation requests or blood-related queries
+      - FAQ: Questions about Thalassemia, blood donation, or Blood Warriors NGO
+      - BOUNCER: Irrelevant or random messages
+
+      Message: {input}
+      Category:
+    `);
+
+    const classifier = RunnableSequence.from([
+      classifierPrompt,
+      new ChatOpenAI({
+        modelName: AI_CONFIG.OPENAI_35_MODEL,
+        temperature: 0.3,
+        maxTokens: 10,
+      }),
+      new StringOutputParser(),
+    ]);
+
+    instance = { embeddings, vectorstore, classifier };
   }
   return instance;
 };
@@ -25,15 +60,19 @@ export const initializeAnalyzer = async (openAIApiKey: string) => {
 const initializeVectorstore = async (
   embeddings: OpenAIEmbeddings
 ): Promise<FaissStore> => {
-  const trainingData = TRAINING_DATA;
-
-  const documents = trainingData.map(
+  const documents = TRAINING_DATA.map(
     (data) =>
-      new Document({ pageContent: data.text, metadata: { agent: data.agent } })
+      new Document({
+        pageContent: data.text,
+        metadata: { agent: data.agent },
+      })
   );
 
-  const vectorstore = await FaissStore.fromDocuments(documents, embeddings);
-  return vectorstore;
+  return await FaissStore.fromDocuments(documents, embeddings);
+};
+
+const matchesPatterns = (text: string, patterns: RegExp[]): boolean => {
+  return patterns.some((pattern) => pattern.test(text));
 };
 
 export const analyzeAgentForMessage = async (
@@ -44,158 +83,61 @@ export const analyzeAgentForMessage = async (
   }
 
   try {
-    const results = await instance.vectorstore.similaritySearchVectorWithScore(
-      await instance.embeddings.embedQuery(message),
-      1
-    );
-
-    if (!results.length) {
-      return MessageAgent.BOUNCER;
+    // First, check for quick pattern matches
+    if (matchesPatterns(message, GREETING_PATTERNS)) {
+      return MessageAgent.GREETING;
     }
 
-    return results[0][0].metadata.agent as MessageAgent;
+    if (matchesPatterns(message, BLOOD_BRIDGE_PATTERNS)) {
+      return MessageAgent.BLOOD_BRIDGE;
+    }
+
+    if (
+      matchesPatterns(message, QUESTION_PATTERNS) ||
+      message.toLowerCase().includes("what") ||
+      message.toLowerCase().includes("how") ||
+      message.toLowerCase().includes("why") ||
+      message.toLowerCase().includes("tell me about")
+    ) {
+      return MessageAgent.FAQ;
+    }
+
+    // For more complex queries, use the vector similarity search
+    const results = await instance.vectorstore.similaritySearchWithScore(
+      message,
+      2
+    );
+
+    if (results.length) {
+      const [topMatch] = results;
+      const [topDoc, topScore] = topMatch;
+      if (topScore > 0.6) {
+        return topDoc.metadata.agent as MessageAgent;
+      }
+    }
+    // For ambiguous cases, use LangChain classifier
+    if (instance.classifier) {
+      const classification = await instance.classifier.invoke({
+        input: message,
+      });
+
+      const result = classification.trim().toUpperCase();
+
+      switch (result) {
+        case "GREETING":
+          return MessageAgent.GREETING;
+        case "BLOOD_BRIDGE":
+          return MessageAgent.BLOOD_BRIDGE;
+        case "FAQ":
+          return MessageAgent.FAQ;
+        default:
+          return MessageAgent.BOUNCER;
+      }
+    }
+
+    return MessageAgent.BOUNCER;
   } catch (error) {
     console.error("Error analyzing message:", error);
     return MessageAgent.BOUNCER;
   }
 };
-// import { MessageAgent } from "@/utils/types/whatsapp";
-
-// export const analyzeAgentForMessage = async (
-//   message: string
-// ): Promise<MessageAgent> => {
-//   // Implement your intent analysis logic here
-//   // You could use OpenAI, Azure Language Understanding, or custom logic
-
-//   const lowerMessage = message.toLowerCase();
-
-//   if (lowerMessage.match(/^(hi|hello|hey|greetings)/)) {
-//     return MessageAgent.GREETING;
-//   }
-
-//   if (lowerMessage.includes("schedule") && lowerMessage.includes("donation")) {
-//     return MessageAgent.BLOOD_BRIDGE;
-//   }
-
-//   if (
-//     lowerMessage.includes("what") ||
-//     lowerMessage.includes("how") ||
-//     lowerMessage.includes("?")
-//   ) {
-//     return MessageAgent.FAQ;
-//   }
-
-//   return MessageAgent.BOUNCER;
-// };
-
-// import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-// import { Document } from "langchain/document";
-// import { FaissStore } from "langchain/vectorstores/faiss";
-// import { GREETING_TEMPLATES, BLOOD_BRIDGE_TEMPLATES } from "./constants";
-// import { ChatResponse, UserRole } from "../types";
-
-// export class ChatbotClassifier {
-//   private embeddings: OpenAIEmbeddings;
-//   private vectorstore: FaissStore;
-
-//   constructor(openaiApiKey: string) {
-//     this.embeddings = new OpenAIEmbeddings({ openAIApiKey: openaiApiKey });
-//     this.vectorstore = this.initializeVectorstore();
-//   }
-
-//   private async initializeVectorstore(): Promise<FaissStore> {
-//     const trainingData =
-
-//     const documents = trainingData.map(
-//       (data) =>
-//         new Document({
-//           pageContent: data.text,
-//           metadata: { agent: data.agent },
-//         })
-//     );
-
-//     return await FaissStore.fromDocuments(documents, this.embeddings);
-//   }
-
-//   async classifyAndRespond(
-//     userQuery: string,
-//     userRole: UserRole,
-//     context: string = ""
-//   ): Promise<ChatResponse> {
-//     if (!userQuery.trim()) {
-//       return {
-//         agent: "bouncer",
-//         message: "Please provide a question or request.",
-//       };
-//     }
-
-//     try {
-//       const queryEmbedding = await this.embeddings.embedQuery(userQuery);
-//       const results = await this.vectorstore.similaritySearchVectorWithScore(
-//         queryEmbedding,
-//         1
-//       );
-
-//       if (!results.length) {
-//         return {
-//           agent: "bouncer",
-//           message:
-//             "I'm sorry, I couldn't understand your query. Please try asking about Thalassemia or blood donation.",
-//         };
-//       }
-
-//       const [match] = results;
-//       const matchedAgent = match[0].metadata.agent;
-
-//       switch (matchedAgent) {
-//         case "blood_bridge":
-//           const applicableTemplates = BLOOD_BRIDGE_TEMPLATES.filter((tmpl) =>
-//             tmpl.user_roles_mapped.includes(userRole)
-//           );
-
-//           if (!applicableTemplates.length) {
-//             return {
-//               agent: "blood_bridge",
-//               message:
-//                 "I apologize, but I don't have a suitable template for your user role.",
-//             };
-//           }
-
-//           const selectedTemplate = applicableTemplates[0];
-//           return {
-//             agent: "blood_bridge",
-//             template: selectedTemplate.template_name,
-//             message: `Processing your request using ${selectedTemplate.template_name}`,
-//           };
-
-//         case "greeting":
-//           return {
-//             agent: "greeting",
-//             message:
-//               GREETING_TEMPLATES[userRole] ||
-//               "Hello! How can we assist you today?",
-//           };
-
-//         case "bouncer":
-//           return {
-//             agent: "bouncer",
-//             message:
-//               "I can only assist with questions about Thalassemia and blood donation. Please rephrase your question.",
-//           };
-
-//         default:
-//           return {
-//             agent: matchedAgent,
-//             message: "How else can I assist you today?",
-//           };
-//       }
-//     } catch (error) {
-//       return {
-//         agent: "error",
-//         message:
-//           "I encountered an error processing your request. Please try again.",
-//         error: error instanceof Error ? error.message : String(error),
-//       };
-//     }
-//   }
-// }
