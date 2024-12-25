@@ -9,6 +9,7 @@ export const convertTextToSpeech = async (text: string): Promise<Buffer> => {
         model: AI_CONFIG.OPENAI_SPEECH_MODEL,
         input: text,
         voice: 'nova',
+        response_format: 'opus',
       },
       {
         headers: {

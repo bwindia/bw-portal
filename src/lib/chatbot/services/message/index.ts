@@ -1,4 +1,4 @@
-import { convertTextToSpeech } from "@/lib/ai/text-to-speech";
+import { convertTextToSpeech } from "@/lib/ai/services/text-to-speech";
 import { WHATSAPP_BASE_URL } from "@/lib/chatbot/config";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -7,8 +7,6 @@ import {
   TemplateMessageParams,
   MessageResponse,
 } from "@/utils/types/whatsapp";
-import FormData from "form-data";
-import { Buffer } from 'buffer';
 
 const sendWhatsAppMessage = async (payload: WhatsAppMessagePayload) => {
   const response = await fetch(`${WHATSAPP_BASE_URL}/messages`, {
@@ -39,18 +37,18 @@ const uploadMediaToWhatsApp = async (
     const formData = new FormData();
     formData.append("messaging_product", "whatsapp");
     formData.append("type", type);
-    formData.append("file", buffer, {
-      filename: "audio.mp3",
-      contentType: "audio/mpeg",
-    });
+    formData.append(
+      "file",
+      new Blob([buffer], { type: "audio/ogg" }),
+      "audio.ogg"
+    );
 
     const response = await fetch(`${WHATSAPP_BASE_URL}/media`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.META_ACCESS_TOKEN}`,
-        ...formData.getHeaders(),
       },
-      body: Buffer.from(formData.getBuffer()),
+      body: formData,
     });
 
     if (!response.ok) {
@@ -61,7 +59,7 @@ const uploadMediaToWhatsApp = async (
     return data.id;
   } catch (error) {
     console.error("Error uploading media:", error);
-    throw new Error("Failed to upload audio file");
+    throw new Error("Something went wrong, please try again later.");
   }
 };
 
@@ -146,9 +144,7 @@ export const sendMessageToUser = async (
         await sendAudioMessage({ to: response.to, audioBuffer });
       } catch (error) {
         console.error("Error sending audio message:", error);
-        await sendDirectMessage(response);
       }
-    } else {
       await sendDirectMessage(response);
     }
   } else {
