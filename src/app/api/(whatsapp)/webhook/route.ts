@@ -41,6 +41,15 @@ export const POST = async (request: Request) => {
       console.log("Webhook Received:", JSON.stringify(body, null, 2)); 
       const message = body.entry[0].changes[0].value.messages[0];
       
+      // Enhanced logging to debug multiple hits
+      console.log(`Received message type: ${message.type}, ID: ${message.id}`);
+      
+      // For audio messages, ensure media is fully available
+      if (message.type === 'audio' && !message.audio?.id) {
+        console.log(`Skipping incomplete audio message: ${message.id}`);
+        return new Response("INCOMPLETE_AUDIO", { status: 200 });
+      }
+
       // Check message age
       const messageTimestamp = parseInt(message.timestamp);
       const currentTimestamp = Math.floor(Date.now() / 1000);
@@ -53,7 +62,7 @@ export const POST = async (request: Request) => {
 
       // Check if we've already processed this message
       if (processedMessageIds.has(message.id)) {
-        console.log(`Duplicate message detected: ${message.id}`);
+        console.log(`Duplicate message detected: ${message.id}, type: ${message.type}`);
         return new Response("DUPLICATE_EVENT", { status: 200 });
       }
 
