@@ -24,6 +24,24 @@ export const getDonorAllDonations = async (donorId: string) => {
   return data;
 };
 
+export const activateUser = async (mobile: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("user_data")
+    .update({ is_active: true })
+    .eq("mobile", mobile)
+    .select("user_id")
+    .single();
+
+  if (error) {
+    throw new Error(
+      "Something went wrong while activating your account. Please try again later."
+    );
+  }
+
+  return data;
+};
+
 export const getTotalDonorsOfBadge = async (badge: string): Promise<number> => {
   const supabase = createClient();
   const { data, error } = await supabase

@@ -1,9 +1,11 @@
+import { activateUser } from "@/lib/chatbot/db/blood-bridge/donor";
 import { BaseTemplate } from "@/lib/chatbot/services/blood-bridge/templates/base-template";
 import { TemplateContext } from "@/utils/types/whatsapp";
 import { MessageResponse } from "@/utils/types/whatsapp";
 
 export class ActivateUser extends BaseTemplate {
   async handle(context: TemplateContext): Promise<MessageResponse> {
+    await activateUser(context.user.mobile);
     return {
       to: context.from,
       templateName: context.templateName,
