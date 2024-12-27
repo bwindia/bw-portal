@@ -34,7 +34,7 @@ export const greetUser = async (
             components: [
               {
                 type: "body",
-                parameters: [{ type: "text", text: userDetails[0].name }],
+                parameters: [{ type: "text", text: user.name }],
               },
               {
                 type: "button",
@@ -105,7 +105,7 @@ export const greetUser = async (
               {
                 type: "body",
                 parameters: [
-                  { type: "text", text: userDetails[0].name },
+                  { type: "text", text: user.name },
                   { type: "text", text: userDetails[0].blood_group || "N/A" },
                   {
                     type: "text",
