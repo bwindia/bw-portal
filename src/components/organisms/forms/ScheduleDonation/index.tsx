@@ -33,16 +33,40 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
   const supabase = createClient();
 
   useEffect(() => {
+    const fetchAllUsers = async (bloodGroupId?: number) => {
+      let allUsers: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
+
+      while (true) {
+        let query = supabase
+          .from("user_data")
+          .select("user_id, name, mobile")
+          .eq("is_active", true)
+          .range(page * pageSize, (page + 1) * pageSize - 1);
+
+        if (bloodGroupId) {
+          query = query.eq("blood_group_id", bloodGroupId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) break;
+        if (!data?.length) break;
+
+        allUsers = [...allUsers, ...data];
+        page++;
+      }
+      return allUsers;
+    };
+
     const fetchData = async () => {
-      const [
-        { data: userData },
-        { data: bridgeData },
-        { data: bloodCenterData },
-      ] = await Promise.all([
-        supabase.from("user_data").select("user_id, name, mobile"),
-        supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
-        supabase.from("master_blood_center").select("blood_center_id, name"),
-      ]);
+      const [userData, { data: bridgeData }, { data: bloodCenterData }] =
+        await Promise.all([
+          fetchAllUsers(),
+          supabase.from("bridge_patient_info").select("bridge_id, bridge_name"),
+          supabase.from("master_blood_center").select("blood_center_id, name"),
+        ]);
       setUsers(userData || []);
       setBridges(bridgeData || []);
       setBloodCenters(bloodCenterData || []);
@@ -52,9 +76,14 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
       const fetchScheduleData = async () => {
         const { data } = await supabase
           .from("tracker_emergency_request")
-          .select("request_type, bridge_id")
+          .select("request_type, bridge_id, blood_group_id")
           .eq("id", scheduleRequestId)
           .single();
+        if (data?.request_type?.toString() === "2") {
+          const userData = await fetchAllUsers(data?.blood_group_id);
+          setUsers(userData || []);
+          console.log("userData length", userData.length);
+        }
         setDonationType(data?.request_type?.toString());
         setAutoCompleteFields((prev) => ({
           ...prev,
@@ -129,16 +158,14 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
               </SelectItem>
             ))}
           </Select>
-          {
-            scheduleRequestId && (
-              <input
-                hidden
-                name="donation_type_id"
-                value={donationType}
-                readOnly
-              />
-            )
-          }
+          {scheduleRequestId && (
+            <input
+              hidden
+              name="donation_type_id"
+              value={donationType}
+              readOnly
+            />
+          )}
         </div>
         <div className="w-full sm:w-1/2">
           {donationType === "2" && (

@@ -35,12 +35,11 @@ const getDestinationTemplate = async (
       .from("mapping_chatbot_template")
       .select("destination_template")
       .eq("message_string", content)
-      .eq("role", role)
-      .eq("is_active", true)
-      .single();
+      // .eq("role", role)
+      .eq("is_active", true);
 
-    if (template) {
-      return template.destination_template;
+    if (template && template.length > 0) {
+      return template[0].destination_template;
     }
 
     return DEFAULT_ROLE_TEMPLATE_MAP[role]["default"] ?? null;

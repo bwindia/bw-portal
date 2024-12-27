@@ -19,7 +19,7 @@ export class RequestRaisedByFighterSuccess extends BaseTemplate {
       name: string;
     }) => ({
       to: volunteer.phone_number,
-      templateName: "request_raised_by_parent",
+      templateName: "request_raised_by_parent_2",
       components: [
         {
           type: "body",
