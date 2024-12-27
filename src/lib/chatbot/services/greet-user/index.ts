@@ -142,7 +142,7 @@ export const greetUser = async (
           templateName: "greeting_inactive_user",
           components: [
             {
-              type: "text",
+              type: "body",
               parameters: [{ type: "text", text: user.name }],
             },
           ],
