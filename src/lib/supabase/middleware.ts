@@ -2,28 +2,53 @@ import {
   ADMIN_PAGE_ROUTE,
   DONOR_PAGE_ROUTE,
   FIGHTER_PAGE_ROUTE,
-  FORGOT_PASSWORD_PATH,
   SIGN_IN_PATH,
-  SIGN_UP_PATH,
   VERIFY_OTP_PATH,
   VOLUNTEER_PAGE_ROUTE,
 } from "@/utils/routes";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-const protectedRoutes = [
-  ADMIN_PAGE_ROUTE,
-  FIGHTER_PAGE_ROUTE,
-  VOLUNTEER_PAGE_ROUTE,
-  DONOR_PAGE_ROUTE,
-];
-const authRoutes = [
-  SIGN_IN_PATH,
-  SIGN_UP_PATH,
-  FORGOT_PASSWORD_PATH,
-  VERIFY_OTP_PATH,
-  "/",
-];
+// Define role hierarchies and their corresponding routes
+const roleHierarchy = {
+  admin: ['super admin', 'admin', 'volunteer admin'],
+  volunteer: ['volunteer'],
+  fighter: ['patient'],
+  donor: ['guest', 'emergency donor', 'bridge donor']
+};
+
+const roleRoutes = {
+  admin: ADMIN_PAGE_ROUTE,
+  volunteer: VOLUNTEER_PAGE_ROUTE,
+  fighter: FIGHTER_PAGE_ROUTE,
+  donor: DONOR_PAGE_ROUTE,
+};
+
+// Add this type at the top with the other type definitions
+type AccessLevel = keyof typeof roleRoutes;
+
+// Helper function to determine access level
+const determineAccessLevel = (userRoles: string[]): AccessLevel | null => {
+  const normalizedUserRoles = userRoles.map(role => role.toLowerCase());
+
+  // Check roles in order of priority
+  if (normalizedUserRoles.some(role => roleHierarchy.admin.includes(role))) {
+    return 'admin';
+  }
+  if (normalizedUserRoles.some(role => roleHierarchy.volunteer.includes(role))) {
+    return 'volunteer';
+  }
+  if (normalizedUserRoles.some(role => roleHierarchy.fighter.includes(role))) {
+    return 'fighter';
+  }
+  if (normalizedUserRoles.some(role => roleHierarchy.donor.includes(role))) {
+    return 'donor';
+  }
+  return 'donor';
+};
+
+const protectedRoutes = Object.values(roleRoutes);
+const authRoutes = [SIGN_IN_PATH, VERIFY_OTP_PATH, "/"];
 
 export const createClient = async (request: NextRequest) => {
   try {
@@ -56,26 +81,62 @@ export const createClient = async (request: NextRequest) => {
       }
     );
 
-    const user = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     const path = request.nextUrl.pathname;
-    
+
     const isProtectedRoute = protectedRoutes.some((route) =>
-      path.startsWith(route+"/")
-  );
-  if (isProtectedRoute && user.error) {
-    return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
-  }
-  const isAuthRoute = authRoutes.includes(path);
-  if (isAuthRoute && !user.error) {
-    // Write logic to redirect based on role here
-    return NextResponse.redirect(new URL(ADMIN_PAGE_ROUTE, request.url));
-  }
+      path.startsWith(route + "/")
+    );
+    if (isProtectedRoute && !user) {
+      return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
+    }
+    const isAuthRoute = authRoutes.includes(path);
+    if (isAuthRoute && user) {
+      const { data: userData } = await supabase
+        .from("user_data")
+        .select("roles:mapping_user_role!fk_user_id(...master_user_role(role))")
+        .eq("mapping_user_role.role_status", true)
+        .eq("mobile", user.phone)
+        .single();
+
+      const userRoles = userData?.roles?.map((r: any) => r.role) || [];
+      const accessLevel = determineAccessLevel(userRoles);
+      
+      if (accessLevel) {
+        return NextResponse.redirect(new URL(roleRoutes[accessLevel], request.url));
+      }
+    }
+
+    // Modify the protected route access check
+    if (user && isProtectedRoute) {
+      const { data: userData } = await supabase
+        .from("user_data")
+        .select("roles:mapping_user_role!fk_user_id(...master_user_role(role))")
+        .eq("mapping_user_role.role_status", true)
+        .eq("mobile", user.phone)
+        .single();
+
+      const userRoles = userData?.roles?.map((r: any) => r.role) || [];
+      console.log(userRoles);
+      const accessLevel = determineAccessLevel(userRoles);
+      console.log(accessLevel);
+
+      if (!accessLevel) {
+        return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));
+      }
+
+      // Check if the current path is allowed for the user's access level
+      const currentPath = path.toLowerCase();
+      
+      const hasAccess = currentPath.startsWith(roleRoutes[accessLevel].toLowerCase());
+
+      if (!hasAccess) {
+        return NextResponse.redirect(new URL(roleRoutes[accessLevel], request.url));
+      }
+    }
 
     return supabaseResponse;
   } catch (e) {
-    // If you are here, a Supabase client could not be created!
-    // This is likely because you have not set up environment variables.
-    // Check out http://localhost:3000 for Next Steps.
     console.error(e);
     return NextResponse.next({
       request: {

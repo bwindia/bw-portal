@@ -1,5 +1,6 @@
 export const SIGN_IN_PATH = "/sign-in";
 export const VERIFY_OTP_PATH = "/verify-otp";
+export const NEW_USER_PATH = "/hello-user";
 
 // Public routes
 export const HOME_PAGE_ROUTE = "/home";

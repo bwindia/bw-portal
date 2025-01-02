@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
   ADMIN_PAGE_ROUTE,
+  LANDING_PAGE_ROUTE,
   SIGN_IN_PATH,
   VERIFY_OTP_PATH,
 } from "@/utils/routes";
@@ -74,14 +75,11 @@ export const helloUserAction = async (
   if (error) {
     return { error: error.message };
   }
-  const { data: userDetails, error: userDetailsError } = await supabase
+  const { data: userDetails } = await supabase
     .from("user_data")
     .select("*")
-    .eq("phone", data.user?.phone)
+    .eq("mobile", data.user?.phone)
     .single();
-  if (userDetailsError) {
-    return { error: userDetailsError.message };
-  }
   if (userDetails) {
     const { error: updatedUserDataError } =
       await supabase
@@ -89,7 +87,7 @@ export const helloUserAction = async (
         .update({
           name: formData.get("name") as string,
         })
-        .eq("phone", data.user?.phone);
+        .eq("mobile", data.user?.phone);
     if (updatedUserDataError) {
       return { error: updatedUserDataError.message };
     }
@@ -98,14 +96,14 @@ export const helloUserAction = async (
     const { error: insertedUserDataError } =
       await supabase.from("user_data").insert({
         name: formData.get("name") as string,
-        phone: data.user?.phone,
+        mobile: data.user?.phone,
         blood_group_id: formData.get("blood_group_id") as string,
-        gender: formData.get("gender") as string,
+        gender_id: formData.get("gender_id") as string,
       });
     if (insertedUserDataError) {
       return { error: insertedUserDataError.message };
     }
   }
-  return { success: "Account created successfully" };
-  // redirect(LANDING_PAGE_ROUTE);
+  
+  redirect(LANDING_PAGE_ROUTE);
 };

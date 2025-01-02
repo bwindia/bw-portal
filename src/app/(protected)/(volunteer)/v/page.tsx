@@ -1,9 +1,7 @@
-import React from 'react'
+import { redirect } from "next/navigation";
 
 const VolunteerPage = () => {
-  return (
-    <div>VolunteerPage</div>
-  )
-}
+  redirect("/v/home");
+};
 
-export default VolunteerPage
+export default VolunteerPage;

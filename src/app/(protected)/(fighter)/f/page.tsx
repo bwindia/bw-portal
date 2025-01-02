@@ -1,9 +1,7 @@
-import React from 'react'
+import { redirect } from "next/navigation";
 
 const FighterPage = () => {
-  return (
-    <div>FighterPage</div>
-  )
-}
+  redirect("/f/home");
+};
 
 export default FighterPage
