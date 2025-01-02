@@ -79,10 +79,10 @@ const SideNav = ({ items, user }: Props) => {
 
   return (
     <>
-      <div className="sm:hidden w-full">
+      <div className="md:hidden w-full">
         <MobileNav items={items} user={user} />
       </div>
-      <div className="sm:flex flex-col justify-between sm:visible hidden max-w-72 min-w-64 shadow-small h-svh text-sm bg-content1">
+      <div className="md:flex flex-col justify-between sm:visible hidden max-w-72 min-w-64 shadow-small h-svh text-sm bg-content1">
         <div className="flex flex-col gap-3">
           <p className="font-bold text-inherit py-2 px-3">
             <Image
@@ -113,17 +113,20 @@ const SideNav = ({ items, user }: Props) => {
           </div>
         </div>
         <div className="flex gap-2 m-2 p-2 items-center justify-between border-t-1 border-default-300">
-          <div className="flex items-center gap-2 px-3">
+          <div className="flex items-center gap-2 px-3 w-[15rem]">
             <User
               avatarProps={{
                 showFallback: true,
-                // isBordered: true,
                 radius: "full",
                 color: "primary",
                 size: "sm",
                 className: "uppercase",
                 name: user.name,
                 src: user.image,
+              }}
+              classNames={{
+                description: "truncate max-w-[9rem] overflow-hidden",
+                name: "truncate max-w-[9rem] overflow-hidden"
               }}
               description={user.email}
               name={user.name}

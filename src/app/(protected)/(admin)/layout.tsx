@@ -30,7 +30,7 @@ export default async function AdminLayout({
 
   return (
     <>
-      <main className="h-svh overflow-hidden flex sm:flex-row flex-col">
+      <main className="h-svh overflow-hidden flex md:flex-row flex-col">
         <div>
           <SideNav items={ADMIN_NAV_BAR} user={profile} />
         </div>

@@ -2,45 +2,13 @@
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/lib/supabase/server";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ADMIN_PAGE_ROUTE,
   SIGN_IN_PATH,
-  SIGN_UP_PATH,
   VERIFY_OTP_PATH,
 } from "@/utils/routes";
 import { Message } from "@/utils/types";
-
-export const signUpAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
-  const supabase = createClient();
-  const origin = headers().get("origin");
-
-  if (!email || !password) {
-    return;
-  }
-
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
-    },
-  });
-
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", SIGN_UP_PATH, error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      SIGN_UP_PATH,
-      "Thanks for signing up! Please check your email for a verification link."
-    );
-  }
-};
 
 export const signInAction = async (
   state: undefined | Message,
@@ -91,79 +59,53 @@ export const verifyOtpAction = async (
   return redirect(ADMIN_PAGE_ROUTE);
 };
 
-export const forgotPasswordAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const supabase = createClient();
-  const origin = headers().get("origin");
-  const callbackUrl = formData.get("callbackUrl")?.toString();
-
-  if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
-  }
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/protected/reset-password`,
-  });
-
-  if (error) {
-    console.error(error.message);
-    return encodedRedirect(
-      "error",
-      "/forgot-password",
-      "Could not reset password"
-    );
-  }
-
-  if (callbackUrl) {
-    return redirect(callbackUrl);
-  }
-
-  return encodedRedirect(
-    "success",
-    "/forgot-password",
-    "Check your email for a link to reset your password."
-  );
-};
-
-export const resetPasswordAction = async (formData: FormData) => {
-  const supabase = createClient();
-
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
-
-  if (!password || !confirmPassword) {
-    encodedRedirect(
-      "error",
-      "/protected/reset-password",
-      "Password and confirm password are required"
-    );
-  }
-
-  if (password !== confirmPassword) {
-    encodedRedirect(
-      "error",
-      "/protected/reset-password",
-      "Passwords do not match"
-    );
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    password: password,
-  });
-
-  if (error) {
-    encodedRedirect(
-      "error",
-      "/protected/reset-password",
-      "Password update failed"
-    );
-  }
-
-  encodedRedirect("success", "/protected/reset-password", "Password updated");
-};
-
 export const signOutAction = async () => {
   const supabase = createClient();
   await supabase.auth.signOut();
   return redirect(SIGN_IN_PATH);
+};
+
+export const helloUserAction = async (
+  state: undefined | Message,
+  formData: FormData
+) => {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    return { error: error.message };
+  }
+  const { data: userDetails, error: userDetailsError } = await supabase
+    .from("user_data")
+    .select("*")
+    .eq("phone", data.user?.phone)
+    .single();
+  if (userDetailsError) {
+    return { error: userDetailsError.message };
+  }
+  if (userDetails) {
+    const { error: updatedUserDataError } =
+      await supabase
+        .from("user_data")
+        .update({
+          name: formData.get("name") as string,
+        })
+        .eq("phone", data.user?.phone);
+    if (updatedUserDataError) {
+      return { error: updatedUserDataError.message };
+    }
+  } else {
+    // TODO: Insert user details in supabase
+    const { error: insertedUserDataError } =
+      await supabase.from("user_data").insert({
+        name: formData.get("name") as string,
+        phone: data.user?.phone,
+        blood_group_id: formData.get("blood_group_id") as string,
+        gender: formData.get("gender") as string,
+      });
+    if (insertedUserDataError) {
+      return { error: insertedUserDataError.message };
+    }
+  }
+  return { success: "Account created successfully" };
+  // redirect(LANDING_PAGE_ROUTE);
 };
