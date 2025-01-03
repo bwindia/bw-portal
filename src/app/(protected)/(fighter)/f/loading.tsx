@@ -1,8 +1,6 @@
-import { CircularProgress } from "@nextui-org/react";
-
 const Loading = () => {
   // Or a custom loading skeleton component
-  return <CircularProgress size="lg" />;
+  return <p className="my-6">Loading...</p>;
 };
 
 export default Loading;

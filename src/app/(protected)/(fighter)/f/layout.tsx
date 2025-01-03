@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { NEW_USER_PATH } from "@/utils/routes";
 import { getUserInfo } from "@/lib/supabase/user";
 
-export default async function VolunteerLayout({
+export default async function FighterLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
