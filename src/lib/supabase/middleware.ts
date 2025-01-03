@@ -117,9 +117,7 @@ export const createClient = async (request: NextRequest) => {
         .single();
 
       const userRoles = userData?.roles?.map((r: any) => r.role) || [];
-      console.log(userRoles);
       const accessLevel = determineAccessLevel(userRoles);
-      console.log(accessLevel);
 
       if (!accessLevel) {
         return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url));

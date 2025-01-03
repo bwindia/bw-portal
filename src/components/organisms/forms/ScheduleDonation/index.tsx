@@ -82,7 +82,6 @@ const ScheduleDonationForm = ({ scheduleRequestId }: Props) => {
         if (data?.request_type?.toString() === "2") {
           const userData = await fetchAllUsers(data?.blood_group_id);
           setUsers(userData || []);
-          console.log("userData length", userData.length);
         }
         setDonationType(data?.request_type?.toString());
         setAutoCompleteFields((prev) => ({

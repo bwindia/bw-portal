@@ -51,7 +51,6 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
             labelPlacement="outside"
             variant="faded"
             defaultValue={userData?.name}
-            // value={userData?.name}
             isRequired
           />
         </div>
@@ -64,7 +63,6 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
             labelPlacement="outside"
             variant="faded"
             defaultValue={userData?.email}
-            isRequired
           />
         </div>
       </div>
@@ -94,7 +92,6 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
                 ? parseDate(userData?.date_of_birth)
                 : undefined
             }
-            isRequired
           />
         </div>
       </div>
@@ -108,7 +105,6 @@ const UserForm: React.FC<UserFormProps> = ({ userData }) => {
             labelPlacement="outside"
             variant="faded"
             defaultSelectedKeys={[userData?.gender_id?.toString()]}
-            isRequired
           >
             {GENDER.map((gender) => (
               <SelectItem key={gender.value} value={gender.value}>
