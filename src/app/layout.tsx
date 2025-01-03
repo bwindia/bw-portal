@@ -99,21 +99,21 @@ export const metadata: Metadata = {
   },
   icons: [
     { rel: "icon", url: "/icon.png" },
-    { rel: "apple-touch-icon", url: "/icons/icon-192x192.png" },
+    { rel: "apple-touch-icon", url: "/icons/icon-192.png" },
     {
       rel: "apple-touch-icon",
       sizes: "152x152",
-      url: "/icons/icon-152x152.png",
+      url: "/icons/icon-152.png",
     },
     {
       rel: "apple-touch-icon",
       sizes: "167x167",
-      url: "/icons/icon-167x167.png",
+      url: "/icons/icon-167.png",
     },
     {
       rel: "apple-touch-icon",
       sizes: "180x180",
-      url: "/icons/icon-180x180.png",
+      url: "/icons/icon-180.png",
     },
   ],
 };
