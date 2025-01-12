@@ -38,3 +38,20 @@ export const getFaqMessages = async (mobile: string) => {
   const faqMessages = messages.filter(m => m.agent === "faq");
   return faqMessages;
 };
+
+export const isUserBlocked = async (mobile: string): Promise<boolean> => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("user_data")
+    .select("is_blocked")
+    .eq("mobile", mobile)
+    .single();
+
+  if (error) {
+    console.error("Error checking blocked user:", error);
+    return false;
+  }
+
+  return data?.is_blocked || false;
+};
+

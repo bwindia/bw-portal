@@ -1,6 +1,7 @@
 import { AI_CONFIG } from "@/lib/ai/config";
 import { initializeAnalyzer } from "@/lib/ai/services/agent-analyzer";
 import { WHATSAPP_CONFIG } from "@/lib/chatbot/config";
+import { isUserBlocked } from "@/lib/chatbot/db/message";
 
 let analyzerInitialized = false;
 
@@ -117,6 +118,11 @@ export const validateWhatsAppRequest = async (
     const contact = change.contacts[0];
     const messageId = message.id;
     const userId = contact.wa_id;
+
+    if (await isUserBlocked(userId)) {
+      console.log(`Blocked user message rejected: ${userId}`);
+      return { isValid: false, status: 403, message: "USER_BLOCKED" };
+    }
 
     if (isDuplicateMessage(messageId)) {
       console.log(`Duplicate message blocked: ${messageId}`);
