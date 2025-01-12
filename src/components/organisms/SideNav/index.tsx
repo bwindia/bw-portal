@@ -27,7 +27,7 @@ interface Props {
 const MobileNav = ({ items }: Props) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <Navbar isBlurred onMenuOpenChange={setIsOpen}>
@@ -93,22 +93,18 @@ const SideNav = ({ items, user }: Props) => {
           </p>
           <div className="flex flex-col gap-1 px-3 overflow-y-auto h-[calc(100vh-9rem)]">
             {items.map((item) => (
-              <>
-                <Link key={`navitem-${item.label}`} href={item.path ?? "#"}>
-                  <div
-                    className={`${
-                      item.path && pathname.includes(item.path)
-                        ? "bg-shadow"
-                        : ""
-                    } w-full hover:bg-shadow h-10 shadow-sm rounded-lg flex items-center`}
-                  >
-                    <span className="material-symbols-rounded mx-2.5 text-default-500">
-                      {item.icon}
-                    </span>
-                    <span>{item.label}</span>
-                  </div>
-                </Link>
-              </>
+              <Link key={`navitem-${item.label}`} href={item.path ?? "#"}>
+                <div
+                  className={`${
+                    item.path && pathname.includes(item.path) ? "bg-shadow" : ""
+                  } w-full hover:bg-shadow h-10 shadow-sm rounded-lg flex items-center`}
+                >
+                  <span className="material-symbols-rounded mx-2.5 text-default-500">
+                    {item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -126,7 +122,7 @@ const SideNav = ({ items, user }: Props) => {
               }}
               classNames={{
                 description: "truncate max-w-[9rem] overflow-hidden",
-                name: "truncate max-w-[9rem] overflow-hidden"
+                name: "truncate max-w-[9rem] overflow-hidden",
               }}
               description={user.email}
               name={user.name}
